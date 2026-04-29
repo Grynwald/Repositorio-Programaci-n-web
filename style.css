@@ -1,0 +1,402 @@
+/* --- CONFIGURACIÓN GENERAL Y VARIABLES --- */
+:root {
+    --color-fondo: #FAFAF7; /* Un blanco roto más moderno */
+    --color-primario: #2C4A22; /* Verde bosque profundo */
+    --color-secundario: #B88E5E; /* Tono ocre/dorado tipo cuero/alpaca */
+    --color-texto: #333333;
+    --color-texto-suave: #666666;
+    --fuente-titulos: 'Playfair Display', serif;
+    --fuente-textos: 'Montserrat', sans-serif;
+    --transicion: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+body {
+    margin: 0;
+    font-family: var(--fuente-textos);
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    scroll-behavior: smooth;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+    font-family: var(--fuente-titulos);
+    font-weight: 700;
+    margin: 0;
+}
+
+/* --- ENCABEZADO Y NAVEGACIÓN --- */
+header {
+    background-color: rgba(250, 250, 247, 0.95); /* Efecto vidrio */
+    backdrop-filter: blur(10px);
+    color: var(--color-primario);
+    padding: 15px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+nav a {
+    color: var(--color-texto);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: var(--transicion);
+}
+
+nav a:hover {
+    color: var(--color-secundario);
+}
+
+/* --- BOTÓN DEL CARRITO --- */
+.btn-carrito-nav {
+    background-color: var(--color-primario);
+    padding: 10px 20px;
+    border-radius: 30px;
+    color: white !important;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(44, 74, 34, 0.2);
+    transition: var(--transicion);
+}
+
+.btn-carrito-nav:hover {
+    background-color: #1e3317;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(44, 74, 34, 0.3);
+}
+
+/* --- MENÚ DESPLEGABLE --- */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.dropbtn {
+    color: var(--color-texto);
+    font-weight: 600;
+    transition: var(--transicion);
+}
+
+.dropdown:hover .dropbtn {
+    color: var(--color-secundario);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 150px;
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    top: 150%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 0;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+    opacity: 1;
+    top: 100%; /* Animación suave hacia arriba */
+}
+
+.dropdown-content a {
+    color: var(--color-texto);
+    padding: 12px 20px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+    font-weight: 400;
+    font-size: 0.9rem;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--color-fondo);
+    color: var(--color-primario);
+    font-weight: 600;
+}
+
+/* --- SECCIÓN PRINCIPAL (HERO) --- */
+.hero {
+    background-image: url('https://tn.com.ar/resizer/v2/un-clasico-una-ronda-en-torno-al-mate-foto-adobe-stock-7FTJ7FSQBBG67ML6GGS3S5CRNI.jpeg?auth=0e2e90609742ccb9b7a83e8b8b953fc65701fc4e617fe540852b7d5e27021abd&width=1200');
+    background-size: cover;
+    background-position: center;
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    position: relative;
+}
+
+.hero-overlay {
+    background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(44,74,34,0.5) 100%);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.hero-content {
+    max-width: 800px;
+}
+
+.hero h1 {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    margin-bottom: 20px;
+    line-height: 1.1;
+    letter-spacing: -1px;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin-bottom: 40px;
+    opacity: 0.9;
+}
+
+.btn {
+    display: inline-block;
+    background-color: var(--color-secundario);
+    color: white;
+    padding: 16px 35px;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: var(--transicion);
+    box-shadow: 0 4px 15px rgba(184, 142, 94, 0.4);
+}
+
+.btn:hover {
+    background-color: #a37c50;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(184, 142, 94, 0.6);
+}
+
+/* --- SECCIÓN PRODUCTOS --- */
+.productos {
+    padding: 80px 5%;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.header-seccion {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.header-seccion h2 {
+    color: var(--color-primario);
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.header-seccion p {
+    color: var(--color-texto-suave);
+    font-size: 1.1rem;
+    font-style: italic;
+}
+
+.categoria {
+    margin-bottom: 80px;
+}
+
+.titulo-categoria {
+    color: var(--color-secundario);
+    font-size: 2.2rem;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.titulo-categoria::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: #E0E0E0;
+}
+
+.grilla-productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 40px;
+}
+
+.tarjeta {
+    background-color: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+    transition: var(--transicion);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(0,0,0,0.02);
+}
+
+.tarjeta:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.img-wrapper {
+    width: 100%;
+    height: 250px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    background-color: #f5f5f5;
+}
+
+.img-producto {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.tarjeta:hover .img-producto {
+    transform: scale(1.05); /* Efecto zoom al pasar el mouse */
+}
+
+.tarjeta h4 {
+    color: var(--color-primario);
+    font-size: 1.4rem;
+    margin: 0 0 10px 0;
+}
+
+.tarjeta p {
+    color: var(--color-texto-suave);
+    font-size: 0.95rem;
+    margin-top: 0;
+    flex-grow: 1;
+}
+
+.precio {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-secundario);
+    margin: 15px 0;
+}
+
+.btn-comprar {
+    background-color: transparent;
+    color: var(--color-primario);
+    border: 2px solid var(--color-primario);
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transicion);
+    width: 100%;
+    font-family: var(--fuente-textos);
+}
+
+.btn-comprar:hover {
+    background-color: var(--color-primario);
+    color: white;
+}
+
+.btn-comprar:active {
+    transform: scale(0.97);
+}
+
+.btn-comprar.agregado {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+    color: white;
+}
+
+/* --- SECCIÓN CONTACTO --- */
+.contacto {
+    background-color: var(--color-primario);
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.contacto-contenido {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.contacto h2 {
+    font-size: 2.8rem;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.contacto p {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+.btn-contacto {
+    display: inline-block;
+    border: 2px solid white;
+    color: white;
+    padding: 12px 30px;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: var(--transicion);
+}
+
+.btn-contacto:hover {
+    background-color: white;
+    color: var(--color-primario);
+}
+
+/* --- PIE DE PÁGINA (FOOTER) --- */
+footer {
+    background-color: #1A2E14; /* Verde aún más oscuro */
+    color: #A0A0A0;
+    text-align: center;
+    padding: 30px 20px;
+    font-size: 0.9rem;
+}
+
+/* --- RESPONSIVO --- */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+    }
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    .titulo-categoria {
+        font-size: 1.8rem;
+    }
+}

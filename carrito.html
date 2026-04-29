@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito | Gaudi Mates</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo-gaudi.png" alt="Gaudi Mates" style="height: 60px; width: auto; display: block;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <span style="display:none; font-family: 'Playfair Display', serif; font-size: 28px; color: #2C4A22;">Gaudi</span>
+        </div>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="index.html#productos">Productos</a>
+            <a href="index.html#contacto">Contacto</a>
+            <a href="carrito.html" class="btn-carrito-nav">
+                Carrito (<span id="contador-carrito">0</span>)
+            </a>
+        </nav>
+    </header>
+
+    <main class="pagina-carrito">
+        <section class="carrito">
+            <div class="carrito-contenido">
+                <div class="header-seccion">
+                    <h1>Tu carrito</h1>
+                    <p>Revisa los productos antes de finalizar tu pedido</p>
+                </div>
+                <div id="lista-carrito" class="lista-carrito"></div>
+                <div class="resumen-carrito">
+                    <p>Total: <span id="total-carrito">$0</span></p>
+                    <div class="acciones-carrito">
+                        <button id="vaciar-carrito" class="btn-secundario" type="button">Vaciar carrito</button>
+                        <button id="mostrar-finalizar-compra" class="btn-finalizar" type="button">Finalizar compra</button>
+                    </div>
+                </div>
+
+                <form id="form-finalizar-compra" class="finalizar-compra oculto">
+                    <h2>Finalizar compra</h2>
+                    <div class="campos-compra">
+                        <label>
+                            Nombre completo
+                            <input type="text" id="nombre-cliente" name="nombre" required>
+                        </label>
+                        <label>
+                            Teléfono
+                            <input type="tel" id="telefono-cliente" name="telefono" required>
+                        </label>
+                        <label>
+                            Email
+                            <input type="email" id="email-cliente" name="email" required>
+                        </label>
+                        <label>
+                            Dirección de entrega
+                            <input type="text" id="direccion-cliente" name="direccion" required>
+                        </label>
+                        <label>
+                            Método de entrega
+                            <select id="entrega-cliente" name="entrega" required>
+                                <option value="">Seleccionar</option>
+                                <option value="Retiro por el local">Retiro por el local</option>
+                                <option value="Envio a domicilio">Envío a domicilio</option>
+                            </select>
+                        </label>
+                        <label>
+                            Método de pago
+                            <select id="pago-cliente" name="pago" required>
+                                <option value="">Seleccionar</option>
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Transferencia">Transferencia</option>
+                                <option value="Tarjeta">Tarjeta</option>
+                            </select>
+                        </label>
+                    </div>
+                    <label>
+                        Comentarios
+                        <textarea id="comentarios-cliente" name="comentarios" rows="4" placeholder="Opcional"></textarea>
+                    </label>
+                    <button class="btn-finalizar" type="submit">Confirmar pedido</button>
+                    <p id="mensaje-compra" class="mensaje-compra" aria-live="polite"></p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2026 Gaudi Mates Artesanales. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

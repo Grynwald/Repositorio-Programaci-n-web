@@ -10,6 +10,18 @@
     --transicion: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+/* Refuerzo visual: estos botones nunca quedan con fondo blanco. */
+.btn-comprar,
+.btn-carrito-nav {
+    background-color: var(--color-primario) !important;
+    color: white !important;
+}
+
+.btn-detalle {
+    background-color: var(--color-secundario) !important;
+    color: white !important;
+}
+
 body {
     margin: 0;
     font-family: var(--fuente-textos);
@@ -303,8 +315,8 @@ nav a:hover {
 }
 
 .btn-comprar {
-    background-color: transparent;
-    color: var(--color-primario);
+    background-color: var(--color-primario);
+    color: white;
     border: 2px solid var(--color-primario);
     padding: 12px;
     border-radius: 8px;
@@ -318,20 +330,26 @@ nav a:hover {
 
 .btn-detalle {
     display: block;
-    color: var(--color-secundario);
+    background-color: var(--color-secundario);
+    border-radius: 8px;
+    color: white;
     font-weight: 700;
     margin-top: 12px;
+    padding: 12px;
     text-align: center;
     text-decoration: none;
     transition: var(--transicion);
 }
 
 .btn-detalle:hover {
-    color: var(--color-primario);
+    background-color: #a37c50;
+    color: white;
+    transform: translateY(-2px);
 }
 
 .btn-comprar:hover {
-    background-color: var(--color-primario);
+    background-color: #1e3317;
+    border-color: #1e3317;
     color: white;
 }
 
@@ -498,8 +516,8 @@ nav a:hover {
 .btn-secundario {
     border: 2px solid var(--color-primario);
     border-radius: 8px;
-    background-color: transparent;
-    color: var(--color-primario);
+    background-color: var(--color-primario);
+    color: white;
     cursor: pointer;
     font-family: var(--fuente-textos);
     font-weight: 700;

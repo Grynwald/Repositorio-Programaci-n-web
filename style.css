@@ -66,8 +66,29 @@ nav a {
     transition: var(--transicion);
 }
 
-nav a:hover {
+nav a:hover,
+.nav-link:hover {
     color: var(--color-secundario);
+}
+
+.nav-link,
+.boton-logo,
+.dropdown-content button {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font-family: var(--fuente-textos);
+}
+
+.nav-link {
+    color: var(--color-texto);
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: var(--transicion);
+}
+
+.boton-logo {
+    padding: 0;
 }
 
 /* --- BOTÓN DEL CARRITO --- */
@@ -138,7 +159,18 @@ nav a:hover {
     font-size: 0.9rem;
 }
 
-.dropdown-content a:hover {
+.dropdown-content button {
+    color: var(--color-texto);
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 400;
+    padding: 12px 20px;
+    text-align: left;
+    width: 100%;
+}
+
+.dropdown-content a:hover,
+.dropdown-content button:hover {
     background-color: var(--color-fondo);
     color: var(--color-primario);
     font-weight: 600;
@@ -331,14 +363,18 @@ nav a:hover {
 .btn-detalle {
     display: block;
     background-color: var(--color-secundario);
+    border: 0;
     border-radius: 8px;
     color: white;
+    cursor: pointer;
+    font-family: var(--fuente-textos);
     font-weight: 700;
     margin-top: 12px;
     padding: 12px;
     text-align: center;
     text-decoration: none;
     transition: var(--transicion);
+    width: 100%;
 }
 
 .btn-detalle:hover {
@@ -587,6 +623,12 @@ nav a:hover {
     font-weight: 700;
     padding: 14px 22px;
     transition: var(--transicion);
+}
+
+button.btn {
+    border: 0;
+    cursor: pointer;
+    font-family: var(--fuente-textos);
 }
 
 .btn-finalizar:hover {

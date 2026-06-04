@@ -5,11 +5,11 @@
     "start": "next start"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.107.0",
     "next": "16.2.4",
     "react": "19.2.5",
     "react-dom": "19.2.5"
   },
-  "devDependencies": {},
   "engines": {
     "node": ">=20.9.0"
   }

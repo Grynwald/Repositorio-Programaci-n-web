@@ -442,7 +442,8 @@ function App() {
                 direccion,
                 entrega,
                 pago,
-                comentarios
+                comentarios,
+                items: carrito.map(p => ({ id: p.id, nombre: p.nombre, precio: p.precio, cantidad: p.cantidad }))
             })
         });
         const result = await response.json();

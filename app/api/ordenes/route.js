@@ -47,35 +47,36 @@ export async function POST(request) {
             return errorResponse('Datos de compra invalidos o incompletos', 'INVALID_ORDER_DATA', 400);
         }
 
-        // Obtener items del carrito
-        const { data: carritoItems, error: carritoError } = await supabaseServer
+        // Obtener items del carrito desde la DB
+        const { data: carritoItems } = await supabaseServer
             .from('carrito')
             .select('cantidad, producto:productos(id, nombre, precio, stock)')
             .eq('usuario_id', user.id);
 
-        if (carritoError) {
-            return errorResponse(carritoError.message, 'CART_ERROR', 500);
-        }
+        const itemsDB = (carritoItems || []).filter(item => item.producto);
 
-        const items = carritoItems.filter(item => item.producto);
+        // Si el carrito en DB está vacío, usar los items enviados desde el frontend
+        const itemsBody = Array.isArray(body.items) ? body.items : [];
 
-        if (items.length === 0) {
+        const productosJson = itemsDB.length > 0
+            ? itemsDB.map(item => ({
+                id:       item.producto.id,
+                nombre:   item.producto.nombre,
+                precio:   item.producto.precio,
+                cantidad: item.cantidad
+              }))
+            : itemsBody.filter(i => i.id && i.nombre && i.precio > 0 && i.cantidad > 0);
+
+        if (productosJson.length === 0) {
             return errorResponse('El carrito está vacío', 'EMPTY_CART', 400);
         }
 
-        // Validar stock y calcular total
-        for (const item of items) {
+        // Validar stock contra la DB para los items que vinieron de DB
+        for (const item of itemsDB) {
             if (typeof item.producto.stock === 'number' && item.producto.stock < item.cantidad) {
                 return errorResponse(`Stock insuficiente para ${item.producto.nombre}`, 'INSUFFICIENT_STOCK', 400);
             }
         }
-
-        const productosJson = items.map(item => ({
-            id:       item.producto.id,
-            nombre:   item.producto.nombre,
-            precio:   item.producto.precio,
-            cantidad: item.cantidad
-        }));
 
         const total = productosJson.reduce((sum, p) => sum + p.precio * p.cantidad, 0);
 

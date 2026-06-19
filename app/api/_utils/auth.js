@@ -1,3 +1,4 @@
+import { createClient } from '@supabase/supabase-js';
 import { createSupabaseServerClient, supabaseServerConfigurado } from '../../../src/lib/supabaseServer.js';
 import { errorResponse } from './responses.js';
 
@@ -13,13 +14,21 @@ export async function requireUser(request) {
         return { error: errorResponse('No autenticado', 'UNAUTHORIZED', 401) };
     }
 
-    const supabaseServer = createSupabaseServerClient();
+    try {
+        const supabaseAuth = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+            { auth: { persistSession: false, autoRefreshToken: false } }
+        );
 
-    const { data, error } = await supabaseServer.auth.getUser(token);
+        const { data, error } = await supabaseAuth.auth.getUser(token);
 
-    if (error || !data?.user) {
+        if (error || !data?.user) {
+            return { error: errorResponse('No autenticado', 'UNAUTHORIZED', 401) };
+        }
+
+        return { user: data.user, supabaseServer: createSupabaseServerClient() };
+    } catch {
         return { error: errorResponse('No autenticado', 'UNAUTHORIZED', 401) };
     }
-
-    return { user: data.user, supabaseServer };
 }

@@ -459,8 +459,11 @@ function App() {
         event.currentTarget.reset();
         setCarrito([]);
         setMostrarCheckout(false);
-        // Redirigir al checkout para procesar el pago
-        window.location.href = `/checkout?orden_id=${result.data.id}`;
+        setMensajeCompra('¡Pedido confirmado! En un momento te redirigimos al checkout.');
+        setMensajeError(false);
+        setTimeout(() => {
+            window.location.href = `/checkout?orden_id=${result.data.id}`;
+        }, 2000);
     }
 
     return (

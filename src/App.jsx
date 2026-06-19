@@ -468,6 +468,18 @@ function App() {
 
     return (
         <>
+            {mensajeCompra && !mensajeError && (
+                <div style={{
+                    position: 'fixed', bottom: '28px', left: '50%', transform: 'translateX(-50%)',
+                    background: 'var(--color-primario)', color: 'white',
+                    padding: '14px 28px', borderRadius: '10px',
+                    fontSize: '1rem', fontWeight: '600', zIndex: 9999,
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+                }}>
+                    {mensajeCompra}
+                </div>
+            )}
+
 {(mostrarAuthForm || !usuario) && (
             <AuthForm
                 user={usuario}

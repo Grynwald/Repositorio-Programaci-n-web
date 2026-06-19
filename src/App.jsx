@@ -456,31 +456,18 @@ function App() {
             return;
         }
 
-        event.currentTarget.reset();
         setCarrito([]);
         setMostrarCheckout(false);
-        setMensajeCompra('¡Pedido confirmado! En un momento te redirigimos al checkout.');
+        setMensajeCompra('¡Pedido confirmado!');
         setMensajeError(false);
         setTimeout(() => {
             window.location.href = `/checkout?orden_id=${result.data.id}`;
-        }, 2000);
+        }, 2500);
     }
 
     return (
         <>
-            {mensajeCompra && !mensajeError && (
-                <div style={{
-                    position: 'fixed', bottom: '28px', left: '50%', transform: 'translateX(-50%)',
-                    background: 'var(--color-primario)', color: 'white',
-                    padding: '14px 28px', borderRadius: '10px',
-                    fontSize: '1rem', fontWeight: '600', zIndex: 9999,
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
-                }}>
-                    {mensajeCompra}
-                </div>
-            )}
-
-{(mostrarAuthForm || !usuario) && (
+            {(mostrarAuthForm || !usuario) && (
             <AuthForm
                 user={usuario}
                 email={authEmail}

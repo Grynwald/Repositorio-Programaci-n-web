@@ -1,13 +1,6 @@
 import { errorResponse, successResponse } from '../_utils/responses.js';
 import { sanitizar, validarCantidad } from '../_utils/validation.js';
 import { requireUser } from '../_utils/auth.js';
-import { productos as productosLocales } from '../../../src/data/productos.js';
-
-const productosPlanos = productosLocales.flatMap(cat => cat.items);
-
-function buscarProductoLocal(id) {
-    return productosPlanos.find(p => String(p.id) === String(id)) ?? null;
-}
 
 export async function GET(request) {
     const { user, supabaseServer, error } = await requireUser(request);
@@ -19,7 +12,7 @@ export async function GET(request) {
     try {
         const { data, error: carritoError } = await supabaseServer
             .from('carrito')
-            .select('producto_id, cantidad')
+            .select('cantidad, producto:productos(id, nombre, descripcion, precio, imagen, alt, stock)')
             .eq('usuario_id', user.id);
 
         if (carritoError) {
@@ -27,12 +20,8 @@ export async function GET(request) {
         }
 
         const carrito = data
-            .map(item => {
-                const producto = buscarProductoLocal(item.producto_id);
-                if (!producto) return null;
-                return { ...producto, cantidad: item.cantidad };
-            })
-            .filter(Boolean);
+            .filter(item => item.producto)
+            .map(item => ({ ...item.producto, cantidad: item.cantidad }));
 
         return successResponse(carrito);
     } catch {
@@ -56,10 +45,18 @@ export async function POST(request) {
             return errorResponse('Producto o cantidad invalida', 'INVALID_CART_ITEM', 400);
         }
 
-        const producto = buscarProductoLocal(productoId);
+        const { data: producto, error: productoError } = await supabaseServer
+            .from('productos')
+            .select('id, nombre, descripcion, precio, imagen, alt, stock')
+            .eq('id', productoId)
+            .single();
 
-        if (!producto) {
+        if (productoError || !producto) {
             return errorResponse('Producto no encontrado', 'PRODUCT_NOT_FOUND', 404);
+        }
+
+        if (typeof producto.stock === 'number' && producto.stock < cantidad) {
+            return errorResponse('Stock insuficiente', 'INSUFFICIENT_STOCK', 400);
         }
 
         const { data: existente } = await supabaseServer
@@ -104,10 +101,18 @@ export async function PUT(request) {
             return errorResponse('Producto o cantidad invalida', 'INVALID_CART_ITEM', 400);
         }
 
-        const producto = buscarProductoLocal(productoId);
+        const { data: producto, error: productoError } = await supabaseServer
+            .from('productos')
+            .select('id, nombre, precio, stock')
+            .eq('id', productoId)
+            .single();
 
-        if (!producto) {
+        if (productoError || !producto) {
             return errorResponse('Producto no encontrado', 'PRODUCT_NOT_FOUND', 404);
+        }
+
+        if (typeof producto.stock === 'number' && producto.stock < cantidad) {
+            return errorResponse('Stock insuficiente', 'INSUFFICIENT_STOCK', 400);
         }
 
         const { error: updateError } = await supabaseServer

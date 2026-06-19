@@ -92,8 +92,8 @@ BEGIN
                p.nombre AS prod_nombre,
                p.precio,
                p.stock
-        FROM carrito c
-        JOIN productos p ON p.id = c.producto_id
+        FROM public.carrito c
+        JOIN public.productos p ON p.id = c.producto_id
         WHERE c.usuario_id = p_usuario_id
     LOOP
         IF v_item.stock IS NOT NULL AND v_item.stock < v_item.cantidad THEN
@@ -117,7 +117,7 @@ BEGIN
     END IF;
 
     -- Crear el pedido
-    INSERT INTO pedidos (
+    INSERT INTO public.pedidos (
         usuario_id, nombre, telefono, email,
         direccion, entrega, pago, comentarios,
         total, productos, estado
@@ -130,15 +130,15 @@ BEGIN
     RETURNING id INTO v_pedido_id;
 
     -- Descontar stock (solo productos que tienen stock definido)
-    UPDATE productos p
+    UPDATE public.productos p
     SET    stock = p.stock - c.cantidad
-    FROM   carrito c
+    FROM   public.carrito c
     WHERE  c.producto_id  = p.id
       AND  c.usuario_id   = p_usuario_id
       AND  p.stock IS NOT NULL;
 
     -- Vaciar el carrito
-    DELETE FROM carrito WHERE usuario_id = p_usuario_id;
+    DELETE FROM public.carrito WHERE usuario_id = p_usuario_id;
 
     RETURN QUERY SELECT v_pedido_id, v_total, TRUE, NULL::TEXT;
 
@@ -146,4 +146,4 @@ EXCEPTION WHEN OTHERS THEN
     -- El bloque hace ROLLBACK automático de todo lo anterior
     RETURN QUERY SELECT NULL::BIGINT, 0::NUMERIC, FALSE, SQLERRM;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;

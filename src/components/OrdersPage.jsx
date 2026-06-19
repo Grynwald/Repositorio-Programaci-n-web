@@ -82,7 +82,7 @@ export default function OrdersPage() {
                                                 Pagar
                                             </a>
                                         )}
-                                        <a className="btn-secundario" href={`/ordenes/${orden.id}`}>
+                                        <a className="btn-secundario" href={`/checkout?orden_id=${orden.id}`}>
                                             Ver detalle
                                         </a>
                                     </div>

@@ -255,8 +255,8 @@ function App() {
 
     async function agregarAlCarrito(producto) {
         if (!session?.access_token) {
-            setMensajeCompra('Debes iniciar sesión para agregar productos al carrito.');
-            setMensajeError(true);
+            setMostrarAuthForm(true);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
         }
 

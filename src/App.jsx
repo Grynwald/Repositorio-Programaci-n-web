@@ -409,6 +409,8 @@ function App() {
 
     async function finalizarCompra(event) {
         event.preventDefault();
+        setMensajeCompra('');
+        setMensajeError(false);
 
         if (!session?.access_token) {
             setMensajeCompra('Debes iniciar sesión para finalizar la compra.');

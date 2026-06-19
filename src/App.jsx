@@ -6,10 +6,11 @@ import Footer from './components/Footer.jsx';
 import Header from './components/Header.jsx';
 import Home from './components/Home.jsx';
 import ProductDetail from './components/ProductDetail.jsx';
+import AuthForm from './components/AuthForm.jsx';
 import { productos as productosLocales } from './data/productos.js';
-import { supabase, supabaseConfigurado } from './lib/supabase.js';
 import { formatoPesos } from './utils/formato.js';
 import { guardarCarrito, leerCarritoGuardado } from './utils/storage.js';
+import { supabaseBrowser } from './lib/supabaseClient.js';
 
 const ordenCategorias = productosLocales.map(categoria => categoria.categoria);
 
@@ -56,6 +57,13 @@ function App() {
     const [mostrarCheckout, setMostrarCheckout] = useState(false);
     const [mensajeCompra, setMensajeCompra] = useState('');
     const [mensajeError, setMensajeError] = useState(false);
+    const [usuario, setUsuario] = useState(null);
+    const [session, setSession] = useState(null);
+    const [mostrarAuthForm, setMostrarAuthForm] = useState(true);
+    const [authMode, setAuthMode] = useState('login');
+    const [authEmail, setAuthEmail] = useState('');
+    const [authPassword, setAuthPassword] = useState('');
+    const [authMessage, setAuthMessage] = useState('');
 
     const cantidadTotal = carrito.reduce((total, producto) => total + producto.cantidad, 0);
     const totalCarrito = carrito.reduce((total, producto) => total + producto.precio * producto.cantidad, 0);
@@ -64,16 +72,15 @@ function App() {
 
     useEffect(() => {
         async function cargarProductos() {
-            if (!supabaseConfigurado) {
-                return;
-            }
+            try {
+                const response = await fetch('/api/productos');
+                const result = await response.json();
 
-            const { data, error } = await supabase
-                .from('productos')
-                .select('id, categoria, titulo_categoria, nombre, descripcion, precio, imagen, alt');
-
-            if (!error && data?.length) {
-                setProductos(agruparProductos(data));
+                if (response.ok && result.success && result.data?.length) {
+                    setProductos(agruparProductos(result.data));
+                }
+            } catch {
+                setProductos(productosLocales);
             }
         }
 
@@ -84,6 +91,53 @@ function App() {
         setCarrito(leerCarritoGuardado());
         setCarritoCargado(true);
     }, []);
+
+    useEffect(() => {
+        let authSubscription;
+
+        async function inicializarAuth() {
+            const { data } = await supabaseBrowser.auth.getSession();
+            setSession(data.session);
+            setUsuario(data.session?.user ?? null);
+
+            const { data: authListener } = supabaseBrowser.auth.onAuthStateChange((_, session) => {
+                setSession(session);
+                setUsuario(session?.user ?? null);
+            });
+
+            authSubscription = authListener?.subscription;
+        }
+
+        inicializarAuth();
+
+        return () => {
+            authSubscription?.unsubscribe?.();
+        };
+    }, []);
+
+    useEffect(() => {
+        if (session?.access_token) {
+            async function cargarCarritoServidor() {
+                try {
+                    const response = await fetch('/api/carrito', {
+                        headers: {
+                            Authorization: `Bearer ${session.access_token}`
+                        }
+                    });
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        setCarrito(result.data);
+                        return;
+                    }
+                } catch {
+                    // Fallback a carrito local si falla
+                }
+            }
+
+            cargarCarritoServidor();
+        }
+    }, [session]);
 
     useEffect(() => {
         if (carritoCargado) {
@@ -151,45 +205,184 @@ function App() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function agregarAlCarrito(producto) {
-        setCarrito(carritoActual => {
-            const existe = carritoActual.find(item => item.id === producto.id);
+    async function handleAuthSubmit(event) {
+        event.preventDefault();
+        setAuthMessage('');
 
-            if (existe) {
-                return carritoActual.map(item =>
-                    item.id === producto.id ? { ...item, cantidad: item.cantidad + 1 } : item
-                );
+        if (!authEmail || !authPassword) {
+            setAuthMessage('Completa email y contraseña.');
+            return;
+        }
+
+        const action = authMode === 'login'
+            ? supabaseBrowser.auth.signInWithPassword({ email: authEmail, password: authPassword })
+            : supabaseBrowser.auth.signUp({ email: authEmail, password: authPassword });
+
+        const { error } = await action;
+
+        if (error) {
+            setAuthMessage(error.message);
+            return;
+        }
+
+        setAuthEmail('');
+        setAuthPassword('');
+        setAuthMode('login');
+        setAuthMessage('¡Conectado!');
+        setMostrarAuthForm(false);
+    }
+
+    async function handleSignOut() {
+        await supabaseBrowser.auth.signOut();
+        setSession(null);
+        setUsuario(null);
+        setCarrito([]);
+        setMensajeCompra('Sesión cerrada.');
+        setMensajeError(false);
+    }
+
+    function obtenerHeaders() {
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        if (session?.access_token) {
+            headers.Authorization = `Bearer ${session.access_token}`;
+        }
+
+        return headers;
+    }
+
+    async function agregarAlCarrito(producto) {
+        if (!session?.access_token) {
+            setMensajeCompra('Debes iniciar sesión para agregar productos al carrito.');
+            setMensajeError(true);
+            return;
+        }
+
+        let productoValidado = producto;
+
+        try {
+            const response = await fetch('/api/carrito', {
+                method: 'POST',
+                headers: obtenerHeaders(),
+                body: JSON.stringify({
+                    producto_id: producto.id,
+                    cantidad: 1
+                })
+            });
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                productoValidado = result.data;
+                setCarrito(carritoActual => {
+                    const existe = carritoActual.find(item => item.id === productoValidado.id);
+
+                    if (existe) {
+                        return carritoActual.map(item =>
+                            item.id === productoValidado.id ? { ...item, cantidad: productoValidado.cantidad } : item
+                        );
+                    }
+
+                    return [...carritoActual, productoValidado];
+                });
+            } else {
+                setMensajeCompra(result.error || 'No se pudo agregar el producto al carrito.');
+                setMensajeError(true);
+                return;
             }
+        } catch {
+            setMensajeCompra('No se pudo conectar con el servidor.');
+            setMensajeError(true);
+            return;
+        }
 
-            return [...carritoActual, { ...producto, cantidad: 1 }];
-        });
-
-        setFeedbackId(producto.id);
+        setFeedbackId(productoValidado.id);
         setTimeout(() => setFeedbackId(null), 1200);
     }
 
-    function actualizarCantidad(id, accion) {
-        setCarrito(carritoActual =>
-            carritoActual
-                .map(producto => {
-                    if (producto.id !== id) {
-                        return producto;
-                    }
+    async function actualizarCantidad(id, accion) {
+        const producto = carrito.find(item => item.id === id);
 
-                    return {
-                        ...producto,
-                        cantidad: accion === 'sumar' ? producto.cantidad + 1 : producto.cantidad - 1
-                    };
+        if (!producto) {
+            return;
+        }
+
+        const nuevaCantidad = accion === 'sumar' ? producto.cantidad + 1 : producto.cantidad - 1;
+
+        if (nuevaCantidad <= 0) {
+            await eliminarProducto(id);
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/carrito', {
+                method: 'PUT',
+                headers: obtenerHeaders(),
+                body: JSON.stringify({
+                    producto_id: id,
+                    cantidad: nuevaCantidad
                 })
-                .filter(producto => producto.cantidad > 0)
-        );
+            });
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                setCarrito(carritoActual =>
+                    carritoActual.map(item =>
+                        item.id === id ? { ...item, cantidad: result.data.cantidad } : item
+                    )
+                );
+                return;
+            }
+
+            setMensajeCompra(result.error || 'No se pudo actualizar la cantidad.');
+            setMensajeError(true);
+        } catch {
+            setMensajeCompra('No se pudo conectar con el servidor.');
+            setMensajeError(true);
+        }
     }
 
-    function eliminarProducto(id) {
-        setCarrito(carritoActual => carritoActual.filter(producto => producto.id !== id));
+    async function eliminarProducto(id) {
+        try {
+            const response = await fetch('/api/carrito', {
+                method: 'DELETE',
+                headers: obtenerHeaders(),
+                body: JSON.stringify({ producto_id: id })
+            });
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                setMensajeCompra(result.error || 'No se pudo eliminar el producto.');
+                setMensajeError(true);
+                return;
+            }
+
+            setCarrito(carritoActual => carritoActual.filter(producto => producto.id !== id));
+        } catch {
+            setMensajeCompra('No se pudo conectar con el servidor.');
+            setMensajeError(true);
+        }
     }
 
-    function vaciarCarrito() {
+    async function vaciarCarrito() {
+        try {
+            const response = await fetch('/api/carrito', {
+                method: 'DELETE',
+                headers: obtenerHeaders()
+            });
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                setMensajeCompra(result.error || 'No se pudo vaciar el carrito.');
+                setMensajeError(true);
+                return;
+            }
+        } catch {
+            setMensajeCompra('No se pudo conectar con el servidor.');
+            setMensajeError(true);
+        }
+
         setCarrito([]);
         setMostrarCheckout(false);
         setMensajeCompra('');
@@ -217,6 +410,12 @@ function App() {
     async function finalizarCompra(event) {
         event.preventDefault();
 
+        if (!session?.access_token) {
+            setMensajeCompra('Debes iniciar sesión para finalizar la compra.');
+            setMensajeError(true);
+            return;
+        }
+
         if (carrito.length === 0) {
             setMensajeCompra('Agrega al menos un producto antes de finalizar la compra.');
             setMensajeError(true);
@@ -233,50 +432,57 @@ function App() {
         const comentarios = datos.get('comentarios')?.trim() || null;
         const resumen = carrito.map(producto => `${producto.cantidad} x ${producto.nombre}`).join(', ');
 
-        if (!supabaseConfigurado) {
-            setMensajeCompra('No se pudo conectar con Supabase. Revisa las variables de entorno.');
-            setMensajeError(true);
-            return;
-        }
-
-        const { error } = await supabase.from('pedidos').insert({
-            nombre,
-            telefono,
-            email,
-            direccion,
-            entrega,
-            pago,
-            comentarios,
-            total: totalCarrito,
-            productos: carrito.map(producto => ({
-                id: producto.id,
-                nombre: producto.nombre,
-                precio: producto.precio,
-                cantidad: producto.cantidad
-            }))
+        const response = await fetch('/api/ordenes', {
+            method: 'POST',
+            headers: obtenerHeaders(),
+            body: JSON.stringify({
+                nombre,
+                telefono,
+                email,
+                direccion,
+                entrega,
+                pago,
+                comentarios
+            })
         });
+        const result = await response.json();
 
-        if (error) {
-            setMensajeCompra('No pudimos registrar el pedido. Intentalo nuevamente.');
+        if (!response.ok || !result.success) {
+            setMensajeCompra(result.error || 'No pudimos registrar el pedido. Intentalo nuevamente.');
             setMensajeError(true);
             return;
         }
 
-        setMensajeCompra(
-            `Gracias, ${nombre}. Recibimos tu pedido: ${resumen}. Total: ${formatoPesos.format(totalCarrito)}. Entrega: ${entrega}. Pago: ${pago}.`
-        );
-        setMensajeError(false);
         event.currentTarget.reset();
         setCarrito([]);
         setMostrarCheckout(false);
+        // Redirigir al checkout para procesar el pago
+        window.location.href = `/checkout?orden_id=${result.data.id}`;
     }
 
     return (
         <>
-            <Header
-                cantidadTotal={cantidadTotal}
-                irAInicio={irAInicio}
-                verCarrito={verCarrito}
+{(mostrarAuthForm || !usuario) && (
+            <AuthForm
+                user={usuario}
+                email={authEmail}
+                password={authPassword}
+                onEmailChange={setAuthEmail}
+                onPasswordChange={setAuthPassword}
+                onSubmit={handleAuthSubmit}
+                onSignOut={handleSignOut}
+                authMode={authMode}
+                setAuthMode={setAuthMode}
+                message={authMessage}
+            />
+        )}
+
+        <Header
+            cantidadTotal={cantidadTotal}
+            irAInicio={irAInicio}
+            verCarrito={verCarrito}
+            user={usuario}
+            onAuthToggle={() => setMostrarAuthForm(prev => !prev)}
             />
 
             {vista.nombre === 'inicio' && (

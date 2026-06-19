@@ -252,6 +252,7 @@ nav a:hover,
     margin-bottom: 60px;
 }
 
+.header-seccion h1,
 .header-seccion h2 {
     color: var(--color-primario);
     font-size: 3rem;
@@ -454,6 +455,11 @@ nav a:hover,
     margin: 16px 0 12px;
 }
 
+.btn-volver-catalogo {
+    border-radius: 8px;
+    padding: 14px 22px;
+}
+
 .carrito-contenido {
     max-width: 950px;
     margin: 0 auto;
@@ -579,6 +585,18 @@ nav a:hover,
     margin-bottom: 22px;
 }
 
+.datos-tarjeta {
+    border-top: 1px solid #E0E0E0;
+    margin-top: 12px;
+    padding-top: 22px;
+}
+
+.datos-tarjeta h3 {
+    color: var(--color-primario);
+    font-size: 1.35rem;
+    margin-bottom: 18px;
+}
+
 .campos-compra {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -696,48 +714,265 @@ footer {
     font-size: 0.9rem;
 }
 
+/* --- ESTADO BADGE --- */
+.estado-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    background-color: #E8E8E2;
+    color: var(--color-texto);
+}
+
+.estado-pendiente  { background-color: #FFF3CD; color: #856404; }
+.estado-pagada     { background-color: #D4EDDA; color: #155724; }
+.estado-confirmada { background-color: #CCE5FF; color: #004085; }
+.estado-enviada    { background-color: #D1ECF1; color: #0C5460; }
+.estado-entregada  { background-color: #C3E6CB; color: #155724; }
+.estado-cancelada  { background-color: #F8D7DA; color: #721C24; }
+
+/* --- CHECKOUT --- */
+.checkout-resumen {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+    padding: 24px;
+    border: 1px solid #E8E8E2;
+    border-radius: 12px;
+    background-color: var(--color-fondo);
+    margin-bottom: 8px;
+}
+
+.checkout-orden-info h2 {
+    color: var(--color-primario);
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+}
+
+.checkout-orden-info p {
+    color: var(--color-texto-suave);
+    margin: 6px 0;
+}
+
+.checkout-total {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    min-width: 140px;
+}
+
+.checkout-total-label {
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.checkout-total-monto {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-secundario);
+}
+
+/* --- ÓRDENES --- */
+.orden-detalle {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    min-width: 130px;
+}
+
+/* --- HAMBURGER (oculto en desktop) --- */
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: var(--color-primario);
+    border-radius: 2px;
+    transition: var(--transicion);
+}
+
+.hamburger.activo span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger.activo span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.activo span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
 /* --- RESPONSIVO --- */
 @media (max-width: 768px) {
     header {
-        flex-direction: column;
-        gap: 15px;
-        padding: 20px;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 15px 5%;
+        position: relative;
     }
+
+    .hamburger {
+        display: flex;
+    }
+
     nav {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: rgba(250, 250, 247, 0.98);
+        backdrop-filter: blur(10px);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 8px 5% 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-top: 1px solid #E8E8E2;
+        z-index: 999;
     }
+
+    nav.nav-abierta {
+        display: flex;
+    }
+
+    nav .nav-link,
+    nav a.nav-link {
+        padding: 14px 0;
+        font-size: 1rem;
+        border-bottom: 1px solid #E8E8E2;
+        text-align: left;
+        width: 100%;
+        display: block;
+    }
+
+    .dropdown {
+        width: 100%;
+        border-bottom: 1px solid #E8E8E2;
+    }
+
+    .dropbtn {
+        padding: 14px 0;
+        font-size: 1rem;
+        display: block;
+        width: 100%;
+        text-align: left;
+    }
+
+    /* Deshabilitar hover en mobile, usar solo click (.abierto) */
+    .dropdown:hover .dropdown-content {
+        display: none;
+    }
+
+    .dropdown-content {
+        position: static;
+        opacity: 1;
+        transform: none;
+        box-shadow: none;
+        background-color: transparent;
+        padding: 4px 0 8px 16px;
+        border-radius: 0;
+        top: auto;
+        left: auto;
+        min-width: auto;
+    }
+
+    .dropdown-content.abierto {
+        display: block;
+    }
+
+    .dropdown-content a,
+    .dropdown-content button {
+        padding: 10px 0;
+        border-bottom: none;
+    }
+
+    .btn-carrito-nav {
+        width: 100%;
+        justify-content: center;
+        border-radius: 12px;
+        margin-top: 12px;
+    }
+
     .hero h1 {
         font-size: 2.5rem;
     }
+
     .titulo-categoria {
         font-size: 1.8rem;
     }
+
     .item-carrito,
     .resumen-carrito {
         grid-template-columns: 1fr;
         align-items: stretch;
     }
+
     .item-carrito {
         gap: 14px;
     }
+
+    .orden-detalle {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        min-width: auto;
+    }
+
     .detalle-producto {
         grid-template-columns: 1fr;
         gap: 30px;
         padding-top: 50px;
     }
+
     .cantidad-controles,
     .resumen-carrito {
         justify-content: space-between;
     }
+
     .acciones-carrito {
         flex-direction: column;
     }
+
     .campos-compra {
         grid-template-columns: 1fr;
     }
+
     .finalizar-compra {
         padding: 22px;
+    }
+
+    .checkout-resumen {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .checkout-total {
+        align-items: flex-start;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .checkout-total-monto {
+        font-size: 1.6rem;
     }
 }

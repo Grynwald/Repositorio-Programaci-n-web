@@ -19,21 +19,14 @@ export default function CheckoutForm({ finalizarCompra }) {
                     Direccion de entrega
                     <input type="text" name="direccion" required />
                 </label>
-                <label>
-                    Metodo de entrega
-                    <select name="entrega" required defaultValue="">
-                        <option value="">Seleccionar</option>
-                        <option value="Retiro por el local">Retiro por el local</option>
-                        <option value="Envio a domicilio">Envio a domicilio</option>
-                    </select>
-                </label>
+                <input type="hidden" name="entrega" value="Envio a domicilio" />
                 <label>
                     Metodo de pago
                     <select name="pago" required defaultValue="">
                         <option value="">Seleccionar</option>
                         <option value="Efectivo">Efectivo</option>
                         <option value="Transferencia">Transferencia</option>
-                        <option value="Tarjeta">Tarjeta</option>
+                        <option value="Mercado Pago">Mercado Pago</option>
                     </select>
                 </label>
             </div>

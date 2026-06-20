@@ -54,6 +54,39 @@ ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS metodo_pago    VARCHAR(50);
 ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS referencia_pago VARCHAR(255);
 ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS pagado_en       TIMESTAMP WITH TIME ZONE;
 
+-- ENUM para estados de orden
+DO $$ BEGIN
+    CREATE TYPE estado_orden AS ENUM (
+        'pendiente', 'pagada', 'confirmada',
+        'enviada', 'entregada', 'cancelada'
+    );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+
+-- =============================================
+-- 3. RLS EN PEDIDOS (admin vs cliente)
+-- =============================================
+
+ALTER TABLE pedidos ENABLE ROW LEVEL SECURITY;
+
+-- Clientes: solo ven sus propios pedidos
+DROP POLICY IF EXISTS "cliente_ve_sus_pedidos" ON pedidos;
+CREATE POLICY "cliente_ve_sus_pedidos"
+ON pedidos FOR SELECT
+USING (
+    auth.uid() = usuario_id
+    AND auth.uid() IN (SELECT id FROM perfiles WHERE rol = 'cliente')
+);
+
+-- Admins: ven y modifican todos los pedidos
+DROP POLICY IF EXISTS "admin_gestiona_pedidos" ON pedidos;
+CREATE POLICY "admin_gestiona_pedidos"
+ON pedidos FOR ALL
+USING (
+    auth.uid() IN (SELECT id FROM perfiles WHERE rol = 'admin')
+);
+
 
 -- =============================================
 -- 3. STORED PROCEDURE: crear_pedido_completo

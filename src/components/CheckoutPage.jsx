@@ -76,8 +76,7 @@ function CheckoutContenido() {
                 return;
             }
 
-            // Semana 13: window.location.href = result.data.preferencia.init_point
-            setMensaje('Preferencia de pago creada. La integración real con Mercado Pago llega la próxima semana.');
+            window.location.href = result.data.init_point;
         } catch {
             setMensaje('No se pudo conectar con el servidor.');
         } finally {

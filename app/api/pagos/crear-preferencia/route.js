@@ -1,5 +1,6 @@
 import { requireUser } from '../../_utils/auth.js';
 import { errorResponse, successResponse } from '../../_utils/responses.js';
+import { client, Preference } from '../../../../src/lib/mercadopago.js';
 
 export async function POST(request) {
     const { user, supabaseServer, error } = await requireUser(request);
@@ -35,29 +36,38 @@ export async function POST(request) {
             return errorResponse('La orden no tiene productos', 'EMPTY_ORDER', 400);
         }
 
-        // Estructura de preferencia para Mercado Pago
-        // Semana 13: se pasará al SDK de MP para obtener el init_point real
-        const preferencia = {
-            items: pedido.productos.map(item => ({
-                title:      item.nombre,
-                quantity:   item.cantidad,
-                unit_price: item.precio,
-                currency_id: 'ARS'
-            })),
-            payer: {
-                email: user.email
-            },
-            external_reference: String(pedido.id),
-            notification_url:   `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/api/pagos/webhook`,
-            back_urls: {
-                success: `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/ordenes`,
-                failure: `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/checkout?orden_id=${pedido.id}`,
-                pending: `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/ordenes`
-            }
-        };
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
 
-        return successResponse({ preferencia, pedido_id: pedido.id });
-    } catch {
-        return errorResponse('Error al crear la preferencia de pago', 'PAYMENT_ERROR', 500);
+        const preference = new Preference(client);
+        const resultado = await preference.create({
+            body: {
+                items: pedido.productos.map(item => ({
+                    id:          String(item.id),
+                    title:       item.nombre,
+                    description: `Cantidad: ${item.cantidad}`,
+                    quantity:    Number(item.cantidad),
+                    unit_price:  Number(item.precio),
+                    currency_id: 'ARS'
+                })),
+                payer: {
+                    email: user.email
+                },
+                external_reference: String(pedido.id),
+                notification_url:   `${siteUrl}/api/pagos/webhook`,
+                back_urls: {
+                    success: `${siteUrl}/pago-completado`,
+                    failure: `${siteUrl}/pago-fallido`,
+                    pending: `${siteUrl}/pago-pendiente`
+                },
+                auto_return: 'approved'
+            }
+        });
+
+        // En sandbox usar sandbox_init_point, en producción usar init_point
+        const initPoint = resultado.sandbox_init_point || resultado.init_point;
+
+        return successResponse({ init_point: initPoint, pedido_id: pedido.id });
+    } catch (err) {
+        return errorResponse(err?.message || 'Error al crear la preferencia de pago', 'PAYMENT_ERROR', 500);
     }
 }

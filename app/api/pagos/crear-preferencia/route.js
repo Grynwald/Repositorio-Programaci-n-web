@@ -55,7 +55,8 @@ export async function POST(request) {
                     success: `${siteUrl}/pago-completado`,
                     failure: `${siteUrl}/pago-fallido`,
                     pending: `${siteUrl}/pago-pendiente`
-                }
+                },
+                auto_return: 'approved'
             }
         });
 

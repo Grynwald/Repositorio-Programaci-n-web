@@ -76,8 +76,6 @@ function CheckoutContenido() {
                 return;
             }
 
-            const debug = result.data._debug;
-            alert(`sandbox_init_point: ${debug?.sandbox_init_point ?? 'null'}\n\ninit_point: ${debug?.init_point ?? 'null'}`);
             window.location.href = result.data.init_point;
         } catch {
             setMensaje('No se pudo conectar con el servidor.');

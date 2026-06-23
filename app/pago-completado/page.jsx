@@ -1,12 +1,36 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { supabaseBrowser } from '../../../src/lib/supabaseClient.js';
 
 function PagoCompletadoContenido() {
-    const searchParams = useSearchParams();
-    const paymentId       = searchParams.get('payment_id');
-    const externalRef     = searchParams.get('external_reference');
+    const searchParams  = useSearchParams();
+    const paymentId     = searchParams.get('payment_id');
+    const externalRef   = searchParams.get('external_reference');
+    const [confirmado, setConfirmado] = useState(false);
+
+    useEffect(() => {
+        if (!paymentId || !externalRef) return;
+
+        async function confirmarPago() {
+            const { data } = await supabaseBrowser.auth.getSession();
+            const token = data.session?.access_token;
+            if (!token) return;
+
+            await fetch('/api/pagos/confirmar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ payment_id: paymentId, orden_id: Number(externalRef) })
+            });
+            setConfirmado(true);
+        }
+
+        confirmarPago();
+    }, [paymentId, externalRef]);
 
     return (
         <main className="pagina-carrito">

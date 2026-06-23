@@ -56,7 +56,7 @@ export async function POST(request) {
             }
         });
 
-        const initPoint = resultado.sandbox_init_point || resultado.init_point;
+        const initPoint = resultado.init_point;
 
         return successResponse({
             init_point: initPoint,

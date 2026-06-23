@@ -8,21 +8,35 @@ export async function POST(request) {
     try {
         const body = await request.json().catch(() => ({}));
 
-        if (body.type !== 'payment' || !body.data?.id) {
+        console.log('[Webhook] body:', JSON.stringify(body));
+
+        const paymentId = body.data?.id
+            ? String(body.data.id)
+            : body.resource
+            ? String(body.resource).split('/').pop()
+            : null;
+
+        if (!paymentId || (body.type !== 'payment' && body.topic !== 'payment')) {
+            console.log('[Webhook] ignorado - type:', body.type, 'topic:', body.topic);
             return Response.json({ ok: true }, { status: 200 });
         }
 
-        const paymentId = String(body.data.id);
+        console.log('[Webhook] procesando payment_id:', paymentId);
 
         const mpRes = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
             headers: { Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}` }
         });
 
-        if (!mpRes.ok) return Response.json({ ok: true }, { status: 200 });
+        if (!mpRes.ok) {
+            console.log('[Webhook] error al consultar MP:', mpRes.status);
+            return Response.json({ ok: true }, { status: 200 });
+        }
 
         const pago = await mpRes.json();
         const ordenId = Number(pago.external_reference);
         const status  = pago.status;
+
+        console.log('[Webhook] pago status:', status, 'orden_id:', ordenId);
 
         if (!ordenId || isNaN(ordenId)) return Response.json({ ok: true }, { status: 200 });
 

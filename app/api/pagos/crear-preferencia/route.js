@@ -41,12 +41,14 @@ export async function POST(request) {
         const preference = new Preference(client);
         const resultado = await preference.create({
             body: {
-                items: [{
-                    title:      'Pedido Gaudi Mates',
-                    quantity:   1,
-                    unit_price: Math.round(pedido.total),
+                items: pedido.productos.map(item => ({
+                    id:          String(item.id),
+                    title:       item.nombre,
+                    description: `Cantidad: ${item.cantidad}`,
+                    quantity:    Number(item.cantidad),
+                    unit_price:  Math.round(Number(item.precio)),
                     currency_id: 'ARS'
-                }],
+                })),
                 external_reference: String(pedido.id),
                 back_urls: {
                     success: `${siteUrl}/pago-completado`,
@@ -58,14 +60,7 @@ export async function POST(request) {
 
         const initPoint = resultado.init_point;
 
-        return successResponse({
-            init_point: initPoint,
-            pedido_id: pedido.id,
-            _debug: {
-                sandbox_init_point: resultado.sandbox_init_point ?? null,
-                init_point: resultado.init_point ?? null
-            }
-        });
+        return successResponse({ init_point: initPoint, pedido_id: pedido.id });
     } catch (err) {
         return errorResponse(err?.message || 'Error al crear la preferencia de pago', 'PAYMENT_ERROR', 500);
     }

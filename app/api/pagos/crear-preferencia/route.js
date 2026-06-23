@@ -41,14 +41,12 @@ export async function POST(request) {
         const preference = new Preference(client);
         const resultado = await preference.create({
             body: {
-                items: pedido.productos.map(item => ({
-                    id:          String(item.id),
-                    title:       item.nombre,
-                    description: `Cantidad: ${item.cantidad}`,
-                    quantity:    Number(item.cantidad),
-                    unit_price:  Number(item.precio),
+                items: [{
+                    title:      'Pedido Gaudi Mates',
+                    quantity:   1,
+                    unit_price: Math.round(pedido.total),
                     currency_id: 'ARS'
-                })),
+                }],
                 external_reference: String(pedido.id),
                 back_urls: {
                     success: `${siteUrl}/pago-completado`,

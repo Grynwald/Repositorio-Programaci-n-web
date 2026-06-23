@@ -49,9 +49,6 @@ export async function POST(request) {
                     unit_price:  Number(item.precio),
                     currency_id: 'ARS'
                 })),
-                payer: {
-                    email: user.email
-                },
                 external_reference: String(pedido.id),
                 notification_url:   `${siteUrl}/api/pagos/webhook`,
                 back_urls: {
@@ -63,10 +60,16 @@ export async function POST(request) {
             }
         });
 
-        // En sandbox usar sandbox_init_point, en producción usar init_point
         const initPoint = resultado.sandbox_init_point || resultado.init_point;
 
-        return successResponse({ init_point: initPoint, pedido_id: pedido.id });
+        return successResponse({
+            init_point: initPoint,
+            pedido_id: pedido.id,
+            _debug: {
+                sandbox_init_point: resultado.sandbox_init_point ?? null,
+                init_point: resultado.init_point ?? null
+            }
+        });
     } catch (err) {
         return errorResponse(err?.message || 'Error al crear la preferencia de pago', 'PAYMENT_ERROR', 500);
     }

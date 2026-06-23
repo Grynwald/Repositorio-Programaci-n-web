@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { supabaseBrowser } from '../../../src/lib/supabaseClient.js';
+import { supabaseBrowser } from '../../src/lib/supabaseClient.js';
 
 function PagoCompletadoContenido() {
     const searchParams  = useSearchParams();

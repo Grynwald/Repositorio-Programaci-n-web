@@ -461,7 +461,10 @@ nav a:hover,
     max-width: 280px;
     padding: 12px;
     font-size: 0.95rem;
-    font-weight: 600;
+    border-radius: 8px;
+    letter-spacing: normal;
+    text-transform: none;
+    box-shadow: none;
     margin-top: 16px;
 }
 

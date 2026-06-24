@@ -2,6 +2,8 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import NavPublica from '../../src/components/NavPublica.jsx';
+import Footer from '../../src/components/Footer.jsx';
 
 function PagoFallidoContenido() {
     const searchParams = useSearchParams();
@@ -41,8 +43,12 @@ function PagoFallidoContenido() {
 
 export default function PagoFallido() {
     return (
-        <Suspense fallback={<div style={{ padding: '80px', textAlign: 'center' }}>Cargando...</div>}>
-            <PagoFallidoContenido />
-        </Suspense>
+        <>
+            <NavPublica />
+            <Suspense fallback={<div style={{ padding: '80px', textAlign: 'center' }}>Cargando...</div>}>
+                <PagoFallidoContenido />
+            </Suspense>
+            <Footer />
+        </>
     );
 }

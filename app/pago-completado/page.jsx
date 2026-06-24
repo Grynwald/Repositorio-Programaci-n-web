@@ -3,6 +3,8 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { supabaseBrowser } from '../../src/lib/supabaseClient.js';
+import NavPublica from '../../src/components/NavPublica.jsx';
+import Footer from '../../src/components/Footer.jsx';
 
 function PagoCompletadoContenido() {
     const searchParams  = useSearchParams();
@@ -65,8 +67,12 @@ function PagoCompletadoContenido() {
 
 export default function PagoCompletado() {
     return (
-        <Suspense fallback={<div style={{ padding: '80px', textAlign: 'center' }}>Cargando...</div>}>
-            <PagoCompletadoContenido />
-        </Suspense>
+        <>
+            <NavPublica />
+            <Suspense fallback={<div style={{ padding: '80px', textAlign: 'center' }}>Cargando...</div>}>
+                <PagoCompletadoContenido />
+            </Suspense>
+            <Footer />
+        </>
     );
 }

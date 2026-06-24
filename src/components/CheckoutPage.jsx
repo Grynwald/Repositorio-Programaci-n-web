@@ -4,6 +4,8 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { formatoPesos } from '../utils/formato.js';
 import { supabaseBrowser } from '../lib/supabaseClient.js';
+import NavPublica from './NavPublica.jsx';
+import Footer from './Footer.jsx';
 
 function CheckoutContenido() {
     const searchParams = useSearchParams();
@@ -187,8 +189,12 @@ function CheckoutContenido() {
 
 export default function CheckoutPage() {
     return (
-        <Suspense fallback={<div className="carrito-vacio" style={{ padding: '80px 5%' }}>Cargando...</div>}>
-            <CheckoutContenido />
-        </Suspense>
+        <>
+            <NavPublica />
+            <Suspense fallback={<div className="carrito-vacio" style={{ padding: '80px 5%' }}>Cargando...</div>}>
+                <CheckoutContenido />
+            </Suspense>
+            <Footer />
+        </>
     );
 }

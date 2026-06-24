@@ -10,30 +10,25 @@ function PagoFallidoContenido() {
     const externalRef  = searchParams.get('external_reference');
 
     return (
-        <main className="pagina-carrito">
+        <main id="contenido-principal" className="pagina-carrito">
             <section className="carrito">
-                <div className="carrito-contenido" style={{ textAlign: 'center', padding: '60px 20px', borderTop: '6px solid #e74c3c' }}>
-                    <p style={{ fontSize: '3rem', marginBottom: '16px' }}>✕</p>
-                    <h1 style={{ color: '#e74c3c', marginBottom: '12px' }}>Pago rechazado</h1>
-                    <p style={{ color: 'var(--color-texto-suave)', marginBottom: '16px' }}>
-                        No pudimos procesar tu pago. Posibles razones:
-                    </p>
-                    <ul style={{ textAlign: 'left', maxWidth: '360px', margin: '0 auto 24px', color: 'var(--color-texto-suave)' }}>
+                <div className="carrito-contenido resultado-pago resultado-pago-borde-top fallido">
+                    <p className="resultado-pago-icono">✕</p>
+                    <h1 className="resultado-pago-titulo fallido">Pago rechazado</h1>
+                    <p>No pudimos procesar tu pago. Posibles razones:</p>
+                    <ul>
                         <li>Fondos insuficientes</li>
                         <li>Tarjeta rechazada por el banco</li>
                         <li>Cancelación del pago</li>
                     </ul>
 
-                    <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <div className="resultado-pago-acciones">
                         {externalRef && (
-                            <a className="btn-finalizar" href={`/checkout?orden_id=${externalRef}`}
-                               style={{ padding: '12px 24px', borderRadius: '8px', textDecoration: 'none' }}>
+                            <a className="btn-finalizar btn-pago-accion" href={`/checkout?orden_id=${externalRef}`}>
                                 Reintentar pago
                             </a>
                         )}
-                        <a className="btn-secundario" href="/ordenes">
-                            Ver mis órdenes
-                        </a>
+                        <a className="btn-secundario" href="/ordenes">Ver mis órdenes</a>
                     </div>
                 </div>
             </section>

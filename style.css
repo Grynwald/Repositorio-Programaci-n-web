@@ -715,6 +715,64 @@ button.btn {
     color: var(--color-primario);
 }
 
+/* --- PÁGINAS DE RESULTADO DE PAGO --- */
+.resultado-pago {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.resultado-pago-icono {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+.resultado-pago-titulo {
+    margin-bottom: 12px;
+}
+
+.resultado-pago-titulo.exitoso  { color: #27ae60; }
+.resultado-pago-titulo.fallido  { color: #e74c3c; }
+.resultado-pago-titulo.pendiente { color: #e67e22; }
+
+.resultado-pago-borde-top.exitoso  { border-top: 6px solid #27ae60; }
+.resultado-pago-borde-top.fallido  { border-top: 6px solid #e74c3c; }
+.resultado-pago-borde-top.pendiente { border-top: 6px solid #e67e22; }
+
+.resultado-pago p {
+    color: var(--color-texto-suave);
+    margin-bottom: 16px;
+}
+
+.resultado-pago ul {
+    text-align: left;
+    max-width: 360px;
+    margin: 0 auto 24px;
+    color: var(--color-texto-suave);
+}
+
+.resultado-pago-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.resultado-pago-acciones {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 24px;
+}
+
+.btn-pago-accion {
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-block;
+}
+
 /* --- SKIP LINK (accesibilidad teclado) --- */
 .skip-link {
     position: absolute;

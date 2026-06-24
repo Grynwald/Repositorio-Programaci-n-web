@@ -7,10 +7,9 @@ import Header from './components/Header.jsx';
 import Home from './components/Home.jsx';
 import ProductDetail from './components/ProductDetail.jsx';
 import AuthForm from './components/AuthForm.jsx';
+import { useAuth } from './hooks/useAuth.js';
 import { productos as productosLocales } from './data/productos.js';
-import { formatoPesos } from './utils/formato.js';
 import { guardarCarrito, leerCarritoGuardado } from './utils/storage.js';
-import { supabaseBrowser } from './lib/supabaseClient.js';
 
 const ordenCategorias = productosLocales.map(categoria => categoria.categoria);
 
@@ -57,8 +56,7 @@ function App() {
     const [mostrarCheckout, setMostrarCheckout] = useState(false);
     const [mensajeCompra, setMensajeCompra] = useState('');
     const [mensajeError, setMensajeError] = useState(false);
-    const [usuario, setUsuario] = useState(null);
-    const [session, setSession] = useState(null);
+    const { usuario, session, signIn, signUp, signOut } = useAuth();
     const [mostrarAuthForm, setMostrarAuthForm] = useState(true);
     const [authMode, setAuthMode] = useState('login');
     const [authEmail, setAuthEmail] = useState('');
@@ -92,28 +90,6 @@ function App() {
         setCarritoCargado(true);
     }, []);
 
-    useEffect(() => {
-        let authSubscription;
-
-        async function inicializarAuth() {
-            const { data } = await supabaseBrowser.auth.getSession();
-            setSession(data.session);
-            setUsuario(data.session?.user ?? null);
-
-            const { data: authListener } = supabaseBrowser.auth.onAuthStateChange((_, session) => {
-                setSession(session);
-                setUsuario(session?.user ?? null);
-            });
-
-            authSubscription = authListener?.subscription;
-        }
-
-        inicializarAuth();
-
-        return () => {
-            authSubscription?.unsubscribe?.();
-        };
-    }, []);
 
     useEffect(() => {
         if (session?.access_token) {
@@ -214,11 +190,11 @@ function App() {
             return;
         }
 
-        const action = authMode === 'login'
-            ? supabaseBrowser.auth.signInWithPassword({ email: authEmail, password: authPassword })
-            : supabaseBrowser.auth.signUp({ email: authEmail, password: authPassword });
+        const accion = authMode === 'login'
+            ? signIn(authEmail, authPassword)
+            : signUp(authEmail, authPassword);
 
-        const { error } = await action;
+        const { error } = await accion;
 
         if (error) {
             setAuthMessage(error.message);
@@ -233,9 +209,7 @@ function App() {
     }
 
     async function handleSignOut() {
-        await supabaseBrowser.auth.signOut();
-        setSession(null);
-        setUsuario(null);
+        await signOut();
         setCarrito([]);
         setMensajeCompra('Sesión cerrada.');
         setMensajeError(false);

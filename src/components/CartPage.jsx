@@ -28,7 +28,7 @@ export default function CartPage({
     }
 
     return (
-        <main className="pagina-carrito">
+        <main id="contenido-principal" className="pagina-carrito">
             <section className="carrito">
                 <div className="carrito-contenido">
                     <div className="header-seccion">
@@ -36,9 +36,9 @@ export default function CartPage({
                         <p>Revisa los productos antes de finalizar tu pedido</p>
                     </div>
 
-                    <div className="lista-carrito">
+                    <div className="lista-carrito" aria-label="Productos en el carrito">
                         {carrito.length === 0 ? (
-                            <p className="carrito-vacio">Todavia no agregaste productos al carrito.</p>
+                            <p className="carrito-vacio" role="status">Todavia no agregaste productos al carrito.</p>
                         ) : (
                             carrito.map(producto => (
                                 <article className="item-carrito" key={producto.id}>
@@ -46,12 +46,12 @@ export default function CartPage({
                                         <h4>{producto.nombre}</h4>
                                         <p>{formatoPesos.format(producto.precio)} c/u</p>
                                     </div>
-                                    <div className="cantidad-controles">
-                                        <button className="btn-cantidad" type="button" onClick={() => actualizarCantidad(producto.id, 'restar')}>-</button>
-                                        <strong>{producto.cantidad}</strong>
-                                        <button className="btn-cantidad" type="button" onClick={() => actualizarCantidad(producto.id, 'sumar')}>+</button>
+                                    <div className="cantidad-controles" role="group" aria-label={`Cantidad de ${producto.nombre}`}>
+                                        <button className="btn-cantidad" type="button" aria-label={`Reducir cantidad de ${producto.nombre}`} onClick={() => actualizarCantidad(producto.id, 'restar')}>-</button>
+                                        <strong aria-live="polite" aria-atomic="true">{producto.cantidad}</strong>
+                                        <button className="btn-cantidad" type="button" aria-label={`Aumentar cantidad de ${producto.nombre}`} onClick={() => actualizarCantidad(producto.id, 'sumar')}>+</button>
                                     </div>
-                                    <button className="btn-eliminar" type="button" onClick={() => eliminarProducto(producto.id)}>Eliminar</button>
+                                    <button className="btn-eliminar" type="button" aria-label={`Eliminar ${producto.nombre} del carrito`} onClick={() => eliminarProducto(producto.id)}>Eliminar</button>
                                 </article>
                             ))
                         )}

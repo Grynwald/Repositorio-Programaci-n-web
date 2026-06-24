@@ -73,6 +73,7 @@ nav a:hover,
 
 .nav-link,
 .boton-logo,
+.dropbtn,
 .dropdown-content button {
     background: none;
     border: 0;
@@ -703,6 +704,33 @@ button.btn {
 .btn-contacto:hover {
     background-color: white;
     color: var(--color-primario);
+}
+
+/* --- SKIP LINK (accesibilidad teclado) --- */
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 16px;
+    background: var(--color-primario);
+    color: white;
+    padding: 10px 18px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    z-index: 9999;
+    border-radius: 0 0 8px 8px;
+    transition: top 0.15s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* --- FOCUS VISIBLE (navegación por teclado) --- */
+:focus-visible {
+    outline: 3px solid var(--color-secundario);
+    outline-offset: 3px;
+    border-radius: 4px;
 }
 
 /* --- PIE DE PÁGINA (FOOTER) --- */

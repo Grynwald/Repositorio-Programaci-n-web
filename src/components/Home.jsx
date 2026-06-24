@@ -2,7 +2,7 @@ import ProductCard from './ProductCard.jsx';
 
 export default function Home({ productos, agregarAlCarrito, verProducto, feedbackId }) {
     return (
-        <>
+        <main id="contenido-principal">
             <section id="inicio" className="hero">
                 <div className="hero-overlay">
                     <div className="hero-content">
@@ -44,6 +44,6 @@ export default function Home({ productos, agregarAlCarrito, verProducto, feedbac
                     <a href="mailto:hola@gaudi.com" className="btn-contacto">Escribinos un mail</a>
                 </div>
             </section>
-        </>
+        </main>
     );
 }

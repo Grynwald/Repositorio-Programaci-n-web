@@ -4,7 +4,7 @@ export default function ProductDetail({ producto, agregarAlCarrito, feedbackId, 
     const agregado = feedbackId === producto.id;
 
     return (
-        <main className="pagina-producto">
+        <main id="contenido-principal" className="pagina-producto">
             <section className="detalle-producto">
                 <img src={producto.imagen} alt={producto.nombre} />
                 <div>

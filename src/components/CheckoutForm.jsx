@@ -24,8 +24,6 @@ export default function CheckoutForm({ finalizarCompra }) {
                     Metodo de pago
                     <select name="pago" required defaultValue="">
                         <option value="">Seleccionar</option>
-                        <option value="Efectivo">Efectivo</option>
-                        <option value="Transferencia">Transferencia</option>
                         <option value="Mercado Pago">Mercado Pago</option>
                     </select>
                 </label>

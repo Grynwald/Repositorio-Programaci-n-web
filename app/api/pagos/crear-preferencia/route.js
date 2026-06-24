@@ -50,13 +50,6 @@ export async function POST(request) {
                     currency_id: 'ARS'
                 })),
                 external_reference: String(pedido.id),
-                payment_methods: {
-                    excluded_payment_types: [
-                        { id: 'ticket' },
-                        { id: 'bank_transfer' },
-                        { id: 'atm' }
-                    ]
-                },
                 back_urls: {
                     success: `${siteUrl}/pago-completado`,
                     failure: `${siteUrl}/pago-fallido`,

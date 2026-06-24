@@ -457,8 +457,11 @@ nav a:hover,
 }
 
 .btn-volver-catalogo {
-    border-radius: 8px;
-    padding: 14px 22px;
+    width: 100%;
+    max-width: 280px;
+    padding: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
 }
 
 .carrito-contenido {

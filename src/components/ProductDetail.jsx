@@ -18,7 +18,7 @@ export default function ProductDetail({ producto, agregarAlCarrito, feedbackId, 
                     >
                         {agregado ? 'Agregado' : 'Agregar al carrito'}
                     </button>
-                    <button className="btn btn-volver-catalogo" type="button" onClick={() => irAInicio('productos')}>
+                    <button className="btn-secundario btn-volver-catalogo" type="button" onClick={() => irAInicio('productos')}>
                         Volver al catalogo
                     </button>
                 </div>

@@ -50,7 +50,6 @@ export async function POST(request) {
                     currency_id: 'ARS'
                 })),
                 external_reference: String(pedido.id),
-                notification_url:   `${siteUrl}/api/pagos/webhook/`,
                 back_urls: {
                     success: `${siteUrl}/pago-completado`,
                     failure: `${siteUrl}/pago-fallido`,

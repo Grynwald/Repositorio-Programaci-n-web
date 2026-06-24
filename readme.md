@@ -76,34 +76,46 @@ Las mismas variables deben configurarse en el panel de Vercel (Settings → Envi
 ├── app/
 │   ├── api/
 │   │   ├── _utils/
-│   │   │   ├── auth.js          # Middleware de autenticación con Supabase
-│   │   │   ├── responses.js     # Helpers successResponse / errorResponse
-│   │   │   └── validation.js    # Validaciones reutilizables
-│   │   ├── auth/rol/            # GET — rol del usuario autenticado
-│   │   ├── carrito/             # GET / POST / DELETE — gestión del carrito
-│   │   ├── ordenes/             # GET / POST — listado y creación de pedidos
-│   │   │   └── [id]/            # GET — detalle de un pedido específico
+│   │   │   ├── auth.js             # Middleware: verifica JWT y retorna usuario
+│   │   │   ├── responses.js        # Helpers successResponse / errorResponse
+│   │   │   └── validation.js       # Sanitización y validaciones reutilizables
+│   │   ├── carrito/                # GET / POST / PUT / DELETE — carrito
+│   │   ├── ordenes/                # GET / POST — pedidos del usuario
+│   │   │   └── [id]/               # GET — detalle de un pedido
 │   │   └── pagos/
-│   │       ├── crear-preferencia/  # POST — genera preferencia de Mercado Pago
-│   │       ├── confirmar/          # POST — confirma pago al volver al sitio
-│   │       └── webhook/            # POST — recibe notificaciones de Mercado Pago
-│   ├── ordenes/                 # Página "Mis órdenes"
-│   ├── pago-completado/         # Página de éxito post-pago
-│   ├── pago-fallido/            # Página de pago rechazado
-│   └── pago-pendiente/          # Página de pago pendiente
+│   │       ├── crear-preferencia/  # POST — genera preferencia en Mercado Pago
+│   │       ├── confirmar/          # POST — confirma pago al regresar al sitio
+│   │       └── webhook/            # POST — notificaciones IPN de Mercado Pago
+│   ├── checkout/                   # Página de resumen y pago
+│   ├── ordenes/                    # Página "Mis órdenes"
+│   ├── pago-completado/            # Página de éxito post-pago
+│   ├── pago-fallido/               # Página de pago rechazado
+│   └── pago-pendiente/             # Página de pago pendiente
 ├── src/
+│   ├── App.jsx                     # Componente raíz: routing SPA, carrito, auth
 │   ├── components/
-│   │   ├── App.jsx              # Componente raíz (catálogo + carrito)
-│   │   ├── Header.jsx           # Navegación y estado de sesión
-│   │   ├── CheckoutForm.jsx     # Formulario de datos de envío
-│   │   ├── OrdersPage.jsx       # Lista de pedidos del usuario
-│   │   └── AuthForm.jsx         # Formulario de login / registro
-│   └── lib/
-│       ├── supabaseClient.js    # Cliente Supabase para el navegador
-│       ├── supabaseServer.js    # Cliente Supabase para el servidor
-│       └── mercadopago.js       # Instancia del SDK de Mercado Pago
+│   │   ├── Header.jsx              # Navegación con menú responsive
+│   │   ├── NavPublica.jsx          # Header simplificado para páginas secundarias
+│   │   ├── Footer.jsx              # Pie de página
+│   │   ├── Home.jsx                # Página principal con hero y catálogo
+│   │   ├── ProductCard.jsx         # Tarjeta de producto
+│   │   ├── ProductDetail.jsx       # Vista detalle de un producto
+│   │   ├── CartPage.jsx            # Página del carrito
+│   │   ├── CheckoutForm.jsx        # Formulario de datos de envío
+│   │   ├── CheckoutPage.jsx        # Página de checkout con resumen y pago MP
+│   │   ├── OrdersPage.jsx          # Historial de órdenes del usuario
+│   │   └── AuthForm.jsx            # Formulario de login / registro
+│   ├── hooks/
+│   │   └── useAuth.js              # Hook: sesión, signIn, signUp, signOut
+│   ├── lib/
+│   │   ├── supabaseClient.js       # Cliente Supabase para el navegador
+│   │   ├── supabaseServer.js       # Cliente Supabase para el servidor
+│   │   └── mercadopago.js          # Instancia del SDK de Mercado Pago
+│   └── utils/
+│       ├── formato.js              # Formato de precios en ARS
+│       └── storage.js              # Persistencia del carrito en localStorage
 └── supabase/
-    └── tablas.sql               # DDL completo de la base de datos
+    └── tablas.sql                  # DDL: tablas, RLS y stored procedure
 ```
 
 ---
@@ -154,6 +166,16 @@ Almacena cada orden de compra.
 | referencia_pago | VARCHAR | ID del pago en Mercado Pago |
 
 Las políticas de Row Level Security (RLS) garantizan que cada usuario solo acceda a sus propios datos.
+
+### Stored procedure `crear_pedido_completo`
+
+La creación de un pedido se ejecuta en una sola transacción en Supabase que:
+1. Valida que el carrito del usuario no esté vacío
+2. Calcula el total en base a los precios actuales de la tabla `productos`
+3. Inserta el registro en `pedidos` con el snapshot de los ítems
+4. Vacía el carrito del usuario
+
+Esto garantiza consistencia: no puede crearse un pedido con carrito vacío ni quedar el carrito lleno después de confirmar.
 
 ---
 

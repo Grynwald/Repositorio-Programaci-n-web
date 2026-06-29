@@ -32,3 +32,22 @@ export async function requireUser(request) {
         return { error: errorResponse('No autenticado', 'UNAUTHORIZED', 401) };
     }
 }
+
+export async function requireAdmin(request) {
+    const { user, error } = await requireUser(request);
+    if (error) return { error };
+
+    const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    const { data: perfil } = await supabase
+        .from('perfiles').select('rol').eq('id', user.id).single();
+
+    if (perfil?.rol !== 'admin') {
+        return { error: errorResponse('Acceso denegado', 'FORBIDDEN', 403) };
+    }
+
+    return { user, supabase };
+}

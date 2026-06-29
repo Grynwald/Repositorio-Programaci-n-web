@@ -6,6 +6,7 @@ import { supabaseBrowser } from '../lib/supabaseClient.js';
 export function useAuth() {
     const [usuario, setUsuario] = useState(null);
     const [session, setSession] = useState(null);
+    const [rol, setRol] = useState(null);
 
     useEffect(() => {
         let subscription;
@@ -27,6 +28,16 @@ export function useAuth() {
         return () => subscription?.unsubscribe?.();
     }, []);
 
+    useEffect(() => {
+        async function cargarRol() {
+            if (!usuario) { setRol(null); return; }
+            const { data } = await supabaseBrowser
+                .from('perfiles').select('rol').eq('id', usuario.id).single();
+            setRol(data?.rol ?? 'cliente');
+        }
+        cargarRol();
+    }, [usuario]);
+
     async function signIn(email, password) {
         return supabaseBrowser.auth.signInWithPassword({ email, password });
     }
@@ -39,5 +50,5 @@ export function useAuth() {
         return supabaseBrowser.auth.signOut();
     }
 
-    return { usuario, session, signIn, signUp, signOut };
+    return { usuario, session, rol, signIn, signUp, signOut };
 }

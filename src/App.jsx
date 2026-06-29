@@ -56,7 +56,7 @@ function App() {
     const [mostrarCheckout, setMostrarCheckout] = useState(false);
     const [mensajeCompra, setMensajeCompra] = useState('');
     const [mensajeError, setMensajeError] = useState(false);
-    const { usuario, session, signIn, signUp, signOut } = useAuth();
+    const { usuario, session, rol, signIn, signUp, signOut } = useAuth();
     const [mostrarAuthForm, setMostrarAuthForm] = useState(true);
     const [authMode, setAuthMode] = useState('login');
     const [authEmail, setAuthEmail] = useState('');
@@ -461,6 +461,7 @@ function App() {
             irAInicio={irAInicio}
             verCarrito={verCarrito}
             user={usuario}
+            rol={rol}
             onAuthToggle={() => setMostrarAuthForm(prev => !prev)}
             />
 

@@ -774,6 +774,52 @@ button.btn {
     display: inline-block;
 }
 
+/* --- PANEL ADMIN --- */
+.admin-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.admin-stock-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.admin-stock-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-texto-suave);
+}
+
+.admin-stock-input {
+    width: 80px;
+    padding: 8px 10px;
+    border: 1px solid #D8D8D0;
+    border-radius: 8px;
+    font-family: var(--fuente-textos);
+    font-size: 1rem;
+    color: var(--color-texto);
+}
+
+.admin-stock-input:focus {
+    border-color: var(--color-secundario);
+    outline: 3px solid rgba(184, 142, 94, 0.18);
+}
+
+.admin-stock-btn {
+    padding: 8px 18px;
+    font-size: 0.9rem;
+}
+
+.admin-stock-mensaje {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #27ae60;
+}
+
 /* --- SKIP LINK (accesibilidad teclado) --- */
 .skip-link {
     position: absolute;

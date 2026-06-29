@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function Header({ cantidadTotal, irAInicio, verCarrito, user, onAuthToggle }) {
+export default function Header({ cantidadTotal, irAInicio, verCarrito, user, onAuthToggle, rol }) {
     const [menuAbierto, setMenuAbierto] = useState(false);
     const [dropdownAbierto, setDropdownAbierto] = useState(false);
 
@@ -66,6 +66,11 @@ export default function Header({ cantidadTotal, irAInicio, verCarrito, user, onA
                     <a className="nav-link" href="/ordenes" onClick={cerrarMenu}>
                         Mis órdenes
                     </a>
+                    {rol === 'admin' && (
+                        <a className="nav-link" href="/admin" onClick={cerrarMenu}>
+                            Admin
+                        </a>
+                    )}
                     <button type="button" className="nav-link" onClick={() => { onAuthToggle(); cerrarMenu(); }}>
                         {user ? 'Cuenta' : 'Iniciar sesión'}
                     </button>

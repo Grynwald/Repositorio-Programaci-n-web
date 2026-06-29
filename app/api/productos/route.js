@@ -1,12 +1,14 @@
-import { supabase, supabaseConfigurado } from '../../../src/lib/supabase.js';
+import { createSupabaseServerClient, supabaseServerConfigurado } from '../../../src/lib/supabaseServer.js';
 import { errorResponse, successResponse } from '../_utils/responses.js';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-    if (!supabaseConfigurado) {
+    if (!supabaseServerConfigurado) {
         return errorResponse('Supabase no esta configurado', 'SUPABASE_NOT_CONFIGURED', 500);
     }
+
+    const supabase = createSupabaseServerClient();
 
     try {
         const { data, error } = await supabase
@@ -17,7 +19,7 @@ export async function GET() {
             return errorResponse(error.message, 'PRODUCTS_ERROR', 500);
         }
 
-        return successResponse(data);
+        return successResponse(data ?? []);
     } catch {
         return errorResponse('Error al obtener productos', 'PRODUCTS_ERROR', 500);
     }

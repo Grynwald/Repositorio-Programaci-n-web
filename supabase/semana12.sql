@@ -49,6 +49,33 @@ USING (auth.uid() = id);
 
 
 -- =============================================
+-- 1b. HACER ADMIN AL USUARIO PRINCIPAL
+-- Reemplazá el mail por el tuyo si cambia
+-- =============================================
+
+INSERT INTO perfiles (id, rol)
+VALUES ((SELECT id FROM auth.users WHERE email = 'santiago.grynwald@gmail.com'), 'admin')
+ON CONFLICT (id) DO UPDATE SET rol = 'admin';
+
+
+-- =============================================
+-- 1c. STOCK INICIAL DE PRODUCTOS
+-- Valores de ejemplo; ajustá desde el panel Admin
+-- =============================================
+
+UPDATE productos SET stock = 15 WHERE id = 'mate-imperial';
+UPDATE productos SET stock = 10 WHERE id = 'mate-torpedo';
+UPDATE productos SET stock = 12 WHERE id = 'mate-camionero';
+UPDATE productos SET stock = 20 WHERE id = 'bombilla-pico-de-loro';
+UPDATE productos SET stock = 20 WHERE id = 'bombilla-chata';
+UPDATE productos SET stock = 8  WHERE id = 'termo-negro-mate';
+UPDATE productos SET stock = 8  WHERE id = 'termo-acero-clasico';
+UPDATE productos SET stock = 8  WHERE id = 'termo-blanco-nieve';
+UPDATE productos SET stock = 50 WHERE id = 'medio-kilo-de-yerba';
+UPDATE productos SET stock = 50 WHERE id = 'kilo-de-yerba';
+
+
+-- =============================================
 -- 2. CAMPOS DE PAGO EN TABLA PEDIDOS
 -- =============================================
 

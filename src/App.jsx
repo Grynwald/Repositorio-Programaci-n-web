@@ -68,7 +68,7 @@ function App() {
     const cantidadTotal = carrito.reduce((total, producto) => total + producto.cantidad, 0);
     const totalCarrito = carrito.reduce((total, producto) => total + producto.precio * producto.cantidad, 0);
 
-    const productosPlanos = useMemo(() => productos.flatMap(categoria => categoria.items), []);
+    const productosPlanos = useMemo(() => productos.flatMap(categoria => categoria.items), [productos]);
 
     useEffect(() => {
         async function cargarProductos() {
@@ -208,6 +208,8 @@ function App() {
         setAuthMode('login');
         setAuthMessage('¡Conectado!');
         setMostrarAuthForm(false);
+        setMensajeCompra('');
+        setMensajeError(false);
     }
 
     async function handleSignOut() {

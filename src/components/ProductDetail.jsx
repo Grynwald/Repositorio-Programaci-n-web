@@ -1,7 +1,9 @@
 import { formatoPesos } from '../utils/formato.js';
 
-export default function ProductDetail({ producto, agregarAlCarrito, feedbackId, irAInicio }) {
+export default function ProductDetail({ producto, agregarAlCarrito, feedbackId, feedbackError, irAInicio }) {
     const agregado = feedbackId === producto.id;
+    const sinStock = typeof producto.stock === 'number' && producto.stock === 0;
+    const errorLocal = feedbackError?.id === producto.id ? feedbackError.mensaje : null;
 
     return (
         <main id="contenido-principal" className="pagina-producto">
@@ -12,12 +14,15 @@ export default function ProductDetail({ producto, agregarAlCarrito, feedbackId, 
                     <p>{producto.descripcion}</p>
                     <p className="precio">{formatoPesos.format(producto.precio)}</p>
                     <button
-                        className={`btn-comprar btn-comprar-detalle ${agregado ? 'agregado' : ''}`}
+                        className={`btn-comprar btn-comprar-detalle ${agregado ? 'agregado' : ''} ${sinStock ? 'sin-stock' : ''}`}
                         type="button"
-                        onClick={() => agregarAlCarrito(producto)}
+                        onClick={() => !sinStock && agregarAlCarrito(producto)}
+                        disabled={sinStock}
+                        aria-disabled={sinStock}
                     >
-                        {agregado ? 'Agregado' : 'Agregar al carrito'}
+                        {sinStock ? 'Sin stock' : agregado ? 'Agregado' : 'Agregar al carrito'}
                     </button>
+                    {errorLocal && <p className="producto-error-feedback">{errorLocal}</p>}
                     <button className="btn btn-volver-catalogo" type="button" onClick={() => irAInicio('productos')}>
                         Volver al catalogo
                     </button>

@@ -9,7 +9,7 @@ export async function GET() {
     try {
         const { data, error } = await supabase
             .from('productos')
-            .select('id, categoria, titulo_categoria, nombre, descripcion, precio, imagen, alt');
+            .select('id, categoria, titulo_categoria, nombre, descripcion, precio, imagen, alt, stock');
 
         if (error) {
             return errorResponse(error.message, 'PRODUCTS_ERROR', 500);

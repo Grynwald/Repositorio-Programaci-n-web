@@ -22,7 +22,8 @@ function agruparProductos(filas) {
             descripcion: producto.descripcion,
             precio: producto.precio,
             imagen: producto.imagen,
-            alt: producto.alt
+            alt: producto.alt,
+            stock: producto.stock ?? null
         };
 
         if (categoriaExistente) {
@@ -53,6 +54,7 @@ function App() {
     const [vista, setVista] = useState({ nombre: 'inicio' });
     const [productoActual, setProductoActual] = useState(null);
     const [feedbackId, setFeedbackId] = useState(null);
+    const [feedbackError, setFeedbackError] = useState(null);
     const [mostrarCheckout, setMostrarCheckout] = useState(false);
     const [mensajeCompra, setMensajeCompra] = useState('');
     const [mensajeError, setMensajeError] = useState(false);
@@ -261,13 +263,14 @@ function App() {
                     return [...carritoActual, productoValidado];
                 });
             } else {
-                setMensajeCompra(result.error || 'No se pudo agregar el producto al carrito.');
-                setMensajeError(true);
+                const msg = result.error || 'No se pudo agregar el producto al carrito.';
+                setFeedbackError({ id: producto.id, mensaje: msg });
+                setTimeout(() => setFeedbackError(null), 3000);
                 return;
             }
         } catch {
-            setMensajeCompra('No se pudo conectar con el servidor.');
-            setMensajeError(true);
+            setFeedbackError({ id: producto.id, mensaje: 'No se pudo conectar con el servidor.' });
+            setTimeout(() => setFeedbackError(null), 3000);
             return;
         }
 
@@ -471,6 +474,7 @@ function App() {
                     agregarAlCarrito={agregarAlCarrito}
                     verProducto={verProducto}
                     feedbackId={feedbackId}
+                    feedbackError={feedbackError}
                 />
             )}
 
@@ -479,6 +483,7 @@ function App() {
                     producto={productoActual}
                     agregarAlCarrito={agregarAlCarrito}
                     feedbackId={feedbackId}
+                    feedbackError={feedbackError}
                     irAInicio={irAInicio}
                 />
             )}

@@ -1,13 +1,13 @@
 import ProductCard from './ProductCard.jsx';
 
-export default function Home({ productos, agregarAlCarrito, verProducto, feedbackId }) {
+export default function Home({ productos, agregarAlCarrito, verProducto, feedbackId, feedbackError }) {
     return (
         <main id="contenido-principal">
             <section id="inicio" className="hero">
                 <div className="hero-overlay">
                     <div className="hero-content">
-                        <h1>El ritual del mate,<br />en su mejor version</h1>
-                        <p>Descubri nuestros mates artesanales, bombillas premium y accesorios disenados para acompanarte todos los dias.</p>
+                        <h1>El ritual del mate,<br />en su mejor versión</h1>
+                        <p>Descubrí nuestros mates artesanales, bombillas premium y accesorios disenados para acompanarte todos los dias.</p>
                         <a href="#productos" className="btn">Explorar Catalogo</a>
                     </div>
                 </div>
@@ -30,6 +30,7 @@ export default function Home({ productos, agregarAlCarrito, verProducto, feedbac
                                     agregarAlCarrito={agregarAlCarrito}
                                     verProducto={verProducto}
                                     feedbackId={feedbackId}
+                                    feedbackError={feedbackError}
                                 />
                             ))}
                         </div>

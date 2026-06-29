@@ -1,9 +1,18 @@
 import { formatoPesos } from '../utils/formato.js';
 
-export default function ProductCard({ producto, agregarAlCarrito, verProducto, feedbackId, feedbackError }) {
+export default function ProductCard({ producto, agregarAlCarrito, verProducto, feedbackId, feedbackError, cantidadEnCarrito }) {
     const agregado = feedbackId === producto.id;
     const sinStock = typeof producto.stock === 'number' && producto.stock === 0;
+    const stockAgotado = typeof producto.stock === 'number' && cantidadEnCarrito >= producto.stock;
+    const bloqueado = sinStock || stockAgotado;
     const errorLocal = feedbackError?.id === producto.id ? feedbackError.mensaje : null;
+
+    function textoBoton() {
+        if (sinStock) return 'Sin stock';
+        if (stockAgotado) return `Máximo (${producto.stock})`;
+        if (agregado) return 'Agregado';
+        return 'Agregar al carrito';
+    }
 
     return (
         <div className="tarjeta">
@@ -14,13 +23,13 @@ export default function ProductCard({ producto, agregarAlCarrito, verProducto, f
             <p>{producto.descripcion}</p>
             <p className="precio">{formatoPesos.format(producto.precio)}</p>
             <button
-                className={`btn-comprar ${agregado ? 'agregado' : ''} ${sinStock ? 'sin-stock' : ''}`}
+                className={`btn-comprar ${agregado ? 'agregado' : ''} ${bloqueado ? 'sin-stock' : ''}`}
                 type="button"
-                onClick={() => !sinStock && agregarAlCarrito(producto)}
-                disabled={sinStock}
-                aria-disabled={sinStock}
+                onClick={() => !bloqueado && agregarAlCarrito(producto)}
+                disabled={bloqueado}
+                aria-disabled={bloqueado}
             >
-                {sinStock ? 'Sin stock' : agregado ? 'Agregado' : 'Agregar al carrito'}
+                {textoBoton()}
             </button>
             {errorLocal && <p className="producto-error-feedback">{errorLocal}</p>}
             <button className="btn-detalle" type="button" onClick={() => verProducto(producto)}>

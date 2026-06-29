@@ -477,6 +477,7 @@ function App() {
                     verProducto={verProducto}
                     feedbackId={feedbackId}
                     feedbackError={feedbackError}
+                    carrito={carrito}
                 />
             )}
 
@@ -486,6 +487,7 @@ function App() {
                     agregarAlCarrito={agregarAlCarrito}
                     feedbackId={feedbackId}
                     feedbackError={feedbackError}
+                    carrito={carrito}
                     irAInicio={irAInicio}
                 />
             )}

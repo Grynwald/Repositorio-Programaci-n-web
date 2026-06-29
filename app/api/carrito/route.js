@@ -55,10 +55,6 @@ export async function POST(request) {
             return errorResponse('Producto no encontrado', 'PRODUCT_NOT_FOUND', 404);
         }
 
-        if (typeof producto.stock === 'number' && producto.stock < cantidad) {
-            return errorResponse('Stock insuficiente', 'INSUFFICIENT_STOCK', 400);
-        }
-
         const { data: existente } = await supabaseServer
             .from('carrito')
             .select('cantidad')
@@ -67,6 +63,14 @@ export async function POST(request) {
             .maybeSingle();
 
         const cantidadFinal = existente ? existente.cantidad + cantidad : cantidad;
+
+        if (typeof producto.stock === 'number' && producto.stock < cantidadFinal) {
+            return errorResponse(
+                `Solo hay ${producto.stock} unidad${producto.stock === 1 ? '' : 'es'} disponible${producto.stock === 1 ? '' : 's'}`,
+                'INSUFFICIENT_STOCK',
+                400
+            );
+        }
 
         const { error: upsertError } = await supabaseServer
             .from('carrito')

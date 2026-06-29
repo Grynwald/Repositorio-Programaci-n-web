@@ -1,6 +1,6 @@
 import ProductCard from './ProductCard.jsx';
 
-export default function Home({ productos, agregarAlCarrito, verProducto, feedbackId, feedbackError }) {
+export default function Home({ productos, agregarAlCarrito, verProducto, feedbackId, feedbackError, carrito }) {
     return (
         <main id="contenido-principal">
             <section id="inicio" className="hero">
@@ -31,6 +31,7 @@ export default function Home({ productos, agregarAlCarrito, verProducto, feedbac
                                     verProducto={verProducto}
                                     feedbackId={feedbackId}
                                     feedbackError={feedbackError}
+                                    cantidadEnCarrito={carrito.find(i => i.id === producto.id)?.cantidad ?? 0}
                                 />
                             ))}
                         </div>

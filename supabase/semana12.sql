@@ -25,12 +25,14 @@ ON CONFLICT (id) DO NOTHING;
 CREATE OR REPLACE FUNCTION crear_perfil_usuario()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO perfiles (id, rol)
+    INSERT INTO public.perfiles (id, rol)
     VALUES (NEW.id, 'cliente')
     ON CONFLICT (id) DO NOTHING;
     RETURN NEW;
+EXCEPTION WHEN OTHERS THEN
+    RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created

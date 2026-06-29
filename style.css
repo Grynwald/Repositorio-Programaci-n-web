@@ -122,6 +122,7 @@ nav a:hover,
     color: var(--color-texto);
     font-weight: 600;
     transition: var(--transicion);
+    touch-action: manipulation;
 }
 
 .dropdown:hover .dropbtn {

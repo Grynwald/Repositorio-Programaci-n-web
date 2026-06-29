@@ -835,6 +835,96 @@ button.btn {
     text-align: center;
 }
 
+.admin-acciones-top {
+    margin-bottom: 20px;
+}
+
+.admin-form {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.admin-form-titulo {
+    margin: 0 0 16px;
+    font-size: 1.05rem;
+    color: var(--color-primario);
+}
+
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.admin-form-full {
+    grid-column: 1 / -1;
+}
+
+.admin-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.admin-form-field label {
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--color-texto-suave);
+}
+
+.campo-requerido {
+    color: #e74c3c;
+}
+
+.admin-form-field input,
+.admin-form-field textarea {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: var(--fuente-textos);
+    background: white;
+}
+
+.admin-form-field small {
+    font-size: 0.75rem;
+    color: var(--color-texto-suave);
+}
+
+.btn-eliminar-admin {
+    background: transparent;
+    border: 1px solid #c0392b;
+    color: #c0392b;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-eliminar-admin:hover:not(:disabled) {
+    background: #c0392b;
+    color: white;
+}
+
+.btn-eliminar-admin:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+    .admin-form-grid {
+        grid-template-columns: 1fr;
+    }
+    .admin-form-full {
+        grid-column: 1;
+    }
+}
+
 /* --- SKIP LINK (accesibilidad teclado) --- */
 .skip-link {
     position: absolute;

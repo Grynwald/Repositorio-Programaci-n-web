@@ -1,6 +1,8 @@
 import { supabase, supabaseConfigurado } from '../../../src/lib/supabase.js';
 import { errorResponse, successResponse } from '../_utils/responses.js';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     if (!supabaseConfigurado) {
         return errorResponse('Supabase no esta configurado', 'SUPABASE_NOT_CONFIGURED', 500);

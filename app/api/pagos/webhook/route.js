@@ -35,16 +35,18 @@ export async function POST(request) {
             process.env.SUPABASE_SERVICE_ROLE_KEY
         );
 
-        let nuevoEstado = null;
-        if (status === 'approved')                                nuevoEstado = 'pagada';
-        else if (status === 'rejected' || status === 'cancelled') nuevoEstado = 'cancelada';
-
-        if (nuevoEstado) {
+        if (status === 'approved') {
             await supabase
                 .from('pedidos')
-                .update({ estado: nuevoEstado, referencia_pago: paymentId })
+                .update({ estado: 'pagada', referencia_pago: paymentId })
                 .eq('id', ordenId)
                 .eq('estado', 'pendiente');
+        } else if (status === 'rejected' || status === 'cancelled') {
+            // Cancela el pedido y restaura el stock en una sola transacción
+            await supabase.rpc('cancelar_pedido_y_restaurar_stock', {
+                p_pedido_id:  ordenId,
+                p_referencia: paymentId
+            });
         }
 
         return Response.json({ ok: true }, { status: 200 });

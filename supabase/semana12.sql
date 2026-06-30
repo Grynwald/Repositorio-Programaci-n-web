@@ -209,3 +209,49 @@ EXCEPTION WHEN OTHERS THEN
     RETURN QUERY SELECT NULL::BIGINT, 0::NUMERIC, FALSE, SQLERRM;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+
+-- =============================================
+-- 5. STORED PROCEDURE: cancelar_pedido_y_restaurar_stock
+-- Cancela un pedido pendiente y devuelve el stock
+-- de cada producto a su valor anterior.
+-- Llamado desde el webhook cuando MP rechaza o
+-- cancela un pago.
+-- =============================================
+
+CREATE OR REPLACE FUNCTION cancelar_pedido_y_restaurar_stock(
+    p_pedido_id  BIGINT,
+    p_referencia TEXT
+)
+RETURNS BOOLEAN AS $$
+DECLARE
+    v_item JSONB;
+BEGIN
+    -- Solo actúa si el pedido existe y sigue pendiente
+    IF NOT EXISTS (
+        SELECT 1 FROM public.pedidos
+        WHERE id = p_pedido_id AND estado = 'pendiente'
+    ) THEN
+        RETURN FALSE;
+    END IF;
+
+    -- Restaurar stock de cada producto del pedido
+    FOR v_item IN
+        SELECT jsonb_array_elements(productos)
+        FROM public.pedidos
+        WHERE id = p_pedido_id
+    LOOP
+        UPDATE public.productos
+        SET stock = stock + (v_item->>'cantidad')::INTEGER
+        WHERE id = (v_item->>'id')
+          AND stock IS NOT NULL;
+    END LOOP;
+
+    -- Marcar el pedido como cancelado
+    UPDATE public.pedidos
+    SET estado = 'cancelada', referencia_pago = p_referencia
+    WHERE id = p_pedido_id AND estado = 'pendiente';
+
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;

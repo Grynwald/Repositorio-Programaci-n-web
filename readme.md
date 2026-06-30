@@ -76,79 +76,108 @@ Las mismas variables deben configurarse en el panel de Vercel (Settings → Envi
 ├── app/
 │   ├── api/
 │   │   ├── _utils/
-│   │   │   ├── auth.js             # Middleware: verifica JWT y retorna usuario
+│   │   │   ├── auth.js             # Middleware: requireUser y requireAdmin
 │   │   │   ├── responses.js        # Helpers successResponse / errorResponse
 │   │   │   └── validation.js       # Sanitización y validaciones reutilizables
-│   │   ├── carrito/                # GET / POST / PUT / DELETE — carrito
+│   │   ├── admin/
+│   │   │   ├── ordenes/            # GET — lista todas las órdenes (solo admin)
+│   │   │   └── productos/          # GET / POST / PATCH / DELETE — gestión de productos (solo admin)
+│   │   ├── carrito/                # GET / POST / PUT / DELETE — carrito del usuario
 │   │   ├── ordenes/                # GET / POST — pedidos del usuario
 │   │   │   └── [id]/               # GET — detalle de un pedido
+│   │   ├── productos/              # GET — catálogo público de productos
 │   │   └── pagos/
 │   │       ├── crear-preferencia/  # POST — genera preferencia en Mercado Pago
 │   │       ├── confirmar/          # POST — confirma pago al regresar al sitio
 │   │       └── webhook/            # POST — notificaciones IPN de Mercado Pago
+│   ├── admin/                      # Panel de administración (protegido por rol)
 │   ├── checkout/                   # Página de resumen y pago
 │   ├── ordenes/                    # Página "Mis órdenes"
 │   ├── pago-completado/            # Página de éxito post-pago
 │   ├── pago-fallido/               # Página de pago rechazado
 │   └── pago-pendiente/             # Página de pago pendiente
 ├── src/
-│   ├── App.jsx                     # Componente raíz: routing SPA, carrito, auth
+│   ├── App.jsx                     # Componente raíz: routing SPA y auth UI
 │   ├── components/
-│   │   ├── Header.jsx              # Navegación con menú responsive
+│   │   ├── Header.jsx              # Navegación con menú responsive y link Admin
 │   │   ├── NavPublica.jsx          # Header simplificado para páginas secundarias
 │   │   ├── Footer.jsx              # Pie de página
 │   │   ├── Home.jsx                # Página principal con hero y catálogo
-│   │   ├── ProductCard.jsx         # Tarjeta de producto
+│   │   ├── ProductCard.jsx         # Tarjeta de producto con validación de stock
 │   │   ├── ProductDetail.jsx       # Vista detalle de un producto
 │   │   ├── CartPage.jsx            # Página del carrito
 │   │   ├── CheckoutForm.jsx        # Formulario de datos de envío
 │   │   ├── CheckoutPage.jsx        # Página de checkout con resumen y pago MP
 │   │   ├── OrdersPage.jsx          # Historial de órdenes del usuario
+│   │   ├── AdminDashboard.jsx      # Panel admin: órdenes, stock, crear/borrar productos
 │   │   └── AuthForm.jsx            # Formulario de login / registro
 │   ├── hooks/
-│   │   └── useAuth.js              # Hook: sesión, signIn, signUp, signOut
+│   │   ├── useAuth.js              # Hook: sesión, rol, signIn, signUp, signOut
+│   │   └── useCarrito.js           # Hook: estado y operaciones del carrito
 │   ├── lib/
 │   │   ├── supabaseClient.js       # Cliente Supabase para el navegador
-│   │   ├── supabaseServer.js       # Cliente Supabase para el servidor
+│   │   ├── supabaseServer.js       # Cliente Supabase con service role para el servidor
 │   │   └── mercadopago.js          # Instancia del SDK de Mercado Pago
 │   └── utils/
 │       ├── formato.js              # Formato de precios en ARS
 │       └── storage.js              # Persistencia del carrito en localStorage
 └── supabase/
-    └── tablas.sql                  # DDL: tablas, RLS y stored procedure
+    ├── tablas.sql                  # DDL: tablas productos, carrito, pedidos y RLS
+    └── semana12.sql                # DDL: tabla perfiles, roles, stored procedure y stock
 ```
 
 ---
 
 ## Endpoints de la API
 
-| Método | Endpoint | Descripción | Auth |
-|---|---|---|---|
-| GET | `/api/carrito` | Obtiene el carrito del usuario | ✅ |
-| POST | `/api/carrito` | Agrega o actualiza un ítem | ✅ |
-| DELETE | `/api/carrito` | Elimina un ítem del carrito | ✅ |
-| GET | `/api/ordenes` | Lista todos los pedidos del usuario | ✅ |
-| POST | `/api/ordenes` | Crea un nuevo pedido | ✅ |
-| GET | `/api/ordenes/[id]` | Detalle de un pedido | ✅ |
-| GET | `/api/productos` | Lista todos los productos del catálogo | ❌ |
-| POST | `/api/pagos/crear-preferencia` | Genera un link de pago en Mercado Pago | ✅ |
-| POST | `/api/pagos/confirmar` | Marca la orden como pagada al regresar al sitio | ✅ |
-| POST | `/api/pagos/webhook` | Recibe notificaciones IPN de Mercado Pago | ❌ |
+### Públicos
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| GET | `/api/productos` | Lista todos los productos del catálogo |
+| POST | `/api/pagos/webhook` | Recibe notificaciones IPN de Mercado Pago |
+
+### Requieren autenticación (JWT en `Authorization: Bearer`)
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| GET | `/api/carrito` | Obtiene el carrito del usuario |
+| POST | `/api/carrito` | Agrega un ítem (valida stock) |
+| PUT | `/api/carrito` | Actualiza cantidad de un ítem |
+| DELETE | `/api/carrito` | Elimina un ítem o vacía el carrito |
+| GET | `/api/ordenes` | Lista los pedidos del usuario |
+| POST | `/api/ordenes` | Crea un nuevo pedido |
+| GET | `/api/ordenes/[id]` | Detalle de un pedido |
+| POST | `/api/pagos/crear-preferencia` | Genera un link de pago en Mercado Pago |
+| POST | `/api/pagos/confirmar` | Marca la orden como pagada |
+
+### Solo admin
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| GET | `/api/admin/ordenes` | Lista todas las órdenes |
+| GET | `/api/admin/productos` | Lista productos con stock |
+| POST | `/api/admin/productos` | Crea un nuevo producto |
+| PATCH | `/api/admin/productos` | Actualiza el stock de un producto |
+| DELETE | `/api/admin/productos` | Elimina un producto |
 
 ---
 
 ## Base de datos (Supabase)
 
 ### Tabla `productos`
-Catálogo de productos. Datos precargados via `INSERT` en `supabase/tablas.sql`.
+Catálogo de productos. Gestionable desde el panel admin.
 
 | Columna | Tipo | Descripción |
 |---|---|---|
-| id | TEXT (PK) | Slug único del producto |
+| id | TEXT (PK) | Slug único (ej: `mate-imperial`) |
 | nombre | TEXT | Nombre del producto |
 | precio | NUMERIC | Precio en ARS |
-| categoria | TEXT | mates / bombillas / termos / yerbas |
-| imagen | TEXT | Ruta de la imagen en `/public` |
+| categoria | TEXT | `mates` / `bombillas` / `termos` / `yerbas` |
+| titulo_categoria | TEXT | Título visible de la categoría |
+| descripcion | TEXT | Descripción del producto |
+| imagen | TEXT | Ruta de la imagen |
+| stock | INTEGER | Unidades disponibles (`NULL` = sin límite) |
 
 ### Tabla `carrito`
 Un registro por (usuario, producto). Se elimina en cascada con el usuario.
@@ -165,17 +194,47 @@ Almacena cada orden de compra.
 | estado | TEXT | `pendiente` → `pagada` / `cancelada` |
 | referencia_pago | VARCHAR | ID del pago en Mercado Pago |
 
+### Tabla `perfiles`
+Almacena el rol de cada usuario (`cliente` o `admin`). Se crea automáticamente via trigger cuando un usuario se registra.
+
 Las políticas de Row Level Security (RLS) garantizan que cada usuario solo acceda a sus propios datos.
 
 ### Stored procedure `crear_pedido_completo`
 
-La creación de un pedido se ejecuta en una sola transacción en Supabase que:
-1. Valida que el carrito del usuario no esté vacío
-2. Calcula el total en base a los precios actuales de la tabla `productos`
-3. Inserta el registro en `pedidos` con el snapshot de los ítems
-4. Vacía el carrito del usuario
+La creación de un pedido se ejecuta en una sola transacción que:
+1. Valida que el carrito no esté vacío
+2. Valida stock disponible por producto
+3. Calcula el total en base a precios actuales
+4. Inserta el registro en `pedidos` con snapshot de los ítems
+5. Descuenta el stock de los productos involucrados
+6. Vacía el carrito del usuario
 
-Esto garantiza consistencia: no puede crearse un pedido con carrito vacío ni quedar el carrito lleno después de confirmar.
+Si cualquier paso falla, toda la transacción hace ROLLBACK automáticamente.
+
+---
+
+## Panel de administración
+
+Accesible en `/admin` solo para usuarios con `rol = 'admin'` en la tabla `perfiles`.
+
+**Funcionalidades:**
+- **Órdenes**: lista completa de todos los pedidos con estado y total
+- **Productos**: edición de stock por producto, creación de nuevos productos y eliminación
+
+Para asignar el rol admin a un usuario:
+```sql
+INSERT INTO perfiles (id, rol)
+VALUES ((SELECT id FROM auth.users WHERE email = 'tu@email.com'), 'admin')
+ON CONFLICT (id) DO UPDATE SET rol = 'admin';
+```
+
+---
+
+## Validación de stock
+
+El stock se valida en dos niveles:
+- **Frontend**: el botón "Agregar al carrito" se deshabilita cuando el producto está sin stock o cuando la cantidad en el carrito ya alcanzó el stock disponible
+- **Backend**: la API `/api/carrito` verifica que `cantidad_en_carrito + nueva_cantidad <= stock` antes de insertar
 
 ---
 
@@ -184,11 +243,11 @@ Esto garantiza consistencia: no puede crearse un pedido con carrito vacío ni qu
 ```
 1. Usuario completa el formulario de checkout
 2. POST /api/ordenes → crea el pedido en estado "pendiente"
-3. POST /api/pagos/crear-preferencia → genera la preferencia con los ítems del pedido
+3. POST /api/pagos/crear-preferencia → genera la preferencia con los ítems
 4. El frontend redirige al usuario a init_point (Mercado Pago Checkout Pro)
 5. El usuario paga en Mercado Pago
-6. Mercado Pago notifica el resultado via webhook → POST /api/pagos/webhook
-   - El webhook actualiza el estado del pedido a "pagada" o "cancelada"
+6. Mercado Pago notifica el resultado → POST /api/pagos/webhook
+   - Actualiza el estado del pedido a "pagada" o "cancelada"
 7. Mercado Pago redirige al usuario a /pago-completado
    - La página llama a POST /api/pagos/confirmar como respaldo
 ```
@@ -199,7 +258,14 @@ El campo `external_reference` de la preferencia contiene el ID del pedido, lo qu
 
 ## Autenticación
 
-La autenticación se maneja con **Supabase Auth** (email + contraseña). El middleware `app/api/_utils/auth.js` verifica el JWT en el header `Authorization: Bearer <token>` de cada request a la API y devuelve el usuario autenticado y un cliente de Supabase con su contexto de sesión.
+La autenticación se maneja con **Supabase Auth** (email + contraseña).
+
+- `requireUser` — verifica el JWT en `Authorization: Bearer <token>` y devuelve el usuario
+- `requireAdmin` — extiende `requireUser` verificando además que el usuario tenga `rol = 'admin'` en la tabla `perfiles`
+
+Los hooks del lado del cliente encapsulan la lógica de sesión:
+- `useAuth` — sesión, rol, signIn, signUp, signOut
+- `useCarrito` — estado del carrito y todas sus operaciones con la API
 
 ---
 

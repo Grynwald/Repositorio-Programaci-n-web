@@ -23,11 +23,9 @@ function PagoFallidoContenido() {
                     </ul>
 
                     <div className="resultado-pago-acciones">
-                        {externalRef && (
-                            <a className="btn-finalizar btn-pago-accion" href={`/checkout?orden_id=${externalRef}`}>
-                                Reintentar pago
-                            </a>
-                        )}
+                        <a className="btn-finalizar btn-pago-accion" href="/">
+                            Volver al catálogo
+                        </a>
                         <a className="btn-secundario" href="/ordenes">Ver mis órdenes</a>
                     </div>
                 </div>

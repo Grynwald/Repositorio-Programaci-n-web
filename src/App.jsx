@@ -32,7 +32,11 @@ function agruparProductos(filas) {
         }
 
         return [...cats, { categoria: producto.categoria, tituloCategoria: producto.titulo_categoria, items: [item] }];
-    }, []).sort((a, b) => ordenCategorias.indexOf(a.categoria) - ordenCategorias.indexOf(b.categoria));
+    }, []).sort((a, b) => {
+        const iA = ordenCategorias.indexOf(a.categoria);
+        const iB = ordenCategorias.indexOf(b.categoria);
+        return (iA === -1 ? Infinity : iA) - (iB === -1 ? Infinity : iB);
+    });
 }
 
 function App() {

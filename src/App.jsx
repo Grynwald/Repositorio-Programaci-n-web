@@ -43,7 +43,7 @@ function App() {
     const [productos, setProductos] = useState(productosLocales);
     const [vista, setVista] = useState({ nombre: 'inicio' });
     const [productoActual, setProductoActual] = useState(null);
-    const [mostrarAuthForm, setMostrarAuthForm] = useState(true);
+    const [mostrarAuthForm, setMostrarAuthForm] = useState(false);
     const [authMode, setAuthMode] = useState('login');
     const [authEmail, setAuthEmail] = useState('');
     const [authPassword, setAuthPassword] = useState('');
@@ -167,7 +167,7 @@ function App() {
 
     return (
         <>
-            {(mostrarAuthForm || !usuario) && (
+            {mostrarAuthForm && (
                 <AuthForm
                     user={usuario}
                     email={authEmail}

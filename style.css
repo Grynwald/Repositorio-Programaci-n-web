@@ -178,6 +178,63 @@ nav a:hover,
     font-weight: 600;
 }
 
+/* --- FORMULARIO DE AUTENTICACIÓN --- */
+.auth-form {
+    background-color: var(--color-fondo);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    padding: 24px 5%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.auth-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.auth-header h2 {
+    font-size: 1.4rem;
+    color: var(--color-primario);
+}
+
+.login-form {
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.login-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-texto);
+}
+
+.login-form input {
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: var(--fuente-textos);
+    font-size: 0.95rem;
+    background: white;
+}
+
+.login-form input:focus {
+    outline: none;
+    border-color: var(--color-primario);
+}
+
+.auth-logged-in {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 0.95rem;
+}
+
 /* --- SECCIÓN PRINCIPAL (HERO) --- */
 .hero {
     background-image: url('https://tn.com.ar/resizer/v2/un-clasico-una-ronda-en-torno-al-mate-foto-adobe-stock-7FTJ7FSQBBG67ML6GGS3S5CRNI.jpeg?auth=0e2e90609742ccb9b7a83e8b8b953fc65701fc4e617fe540852b7d5e27021abd&width=1200');

@@ -138,6 +138,15 @@ export function useCarrito(session) {
         const nuevaCantidad = accion === 'sumar' ? producto.cantidad + 1 : producto.cantidad - 1;
         if (nuevaCantidad <= 0) { await eliminarProducto(id); return; }
 
+        if (!session?.access_token) {
+            if (accion === 'sumar' && typeof producto.stock === 'number' && producto.stock < nuevaCantidad) {
+                mostrarErrorEnProducto(id, `Solo hay ${producto.stock} unidad${producto.stock === 1 ? '' : 'es'} disponible${producto.stock === 1 ? '' : 's'}`);
+                return;
+            }
+            setCarrito(actual => actual.map(i => i.id === id ? { ...i, cantidad: nuevaCantidad } : i));
+            return;
+        }
+
         try {
             const res = await fetch('/api/carrito', {
                 method: 'PUT',
@@ -159,6 +168,11 @@ export function useCarrito(session) {
     }
 
     async function eliminarProducto(id) {
+        if (!session?.access_token) {
+            setCarrito(actual => actual.filter(p => p.id !== id));
+            return;
+        }
+
         try {
             const res = await fetch('/api/carrito', {
                 method: 'DELETE',
@@ -180,6 +194,14 @@ export function useCarrito(session) {
     }
 
     async function vaciarCarrito() {
+        if (!session?.access_token) {
+            setCarrito([]);
+            setMostrarCheckout(false);
+            setMensajeCompra('');
+            setMensajeError(false);
+            return;
+        }
+
         try {
             const res = await fetch('/api/carrito', { method: 'DELETE', headers: headers() });
             const result = await res.json();

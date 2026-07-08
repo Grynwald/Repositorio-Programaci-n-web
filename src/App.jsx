@@ -179,6 +179,7 @@ function App() {
                     authMode={authMode}
                     setAuthMode={setAuthMode}
                     message={authMessage}
+                    onClose={() => setMostrarAuthForm(false)}
                 />
             )}
 

@@ -10,10 +10,11 @@ export default function AuthForm({
     onSignOut,
     authMode,
     setAuthMode,
-    message
+    message,
+    onClose
 }) {
     return (
-        <section className="auth-form">
+        <section className="auth-form" onClick={e => { if (e.target === e.currentTarget) onClose?.(); }}>
             {user ? (
                 <div className="auth-logged-in">
                     <p>Bienvenido, <strong>{user.email}</strong></p>

@@ -178,19 +178,33 @@ nav a:hover,
     font-weight: 600;
 }
 
-/* --- FORMULARIO DE AUTENTICACIÓN --- */
+/* --- FORMULARIO DE AUTENTICACIÓN (MODAL) --- */
 .auth-form {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+}
+
+.auth-form .login-form,
+.auth-form .auth-logged-in {
     background-color: var(--color-fondo);
-    border-bottom: 1px solid rgba(0,0,0,0.08);
-    padding: 24px 5%;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    border-radius: 16px;
+    padding: 36px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 
 .auth-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 .auth-header h2 {
@@ -199,10 +213,9 @@ nav a:hover,
 }
 
 .login-form {
-    max-width: 420px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
 }
 
 .login-form label {

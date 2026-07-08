@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { guardarCarrito, leerCarritoGuardado } from '../utils/storage.js';
 
 export function useCarrito(session) {
@@ -11,6 +11,9 @@ export function useCarrito(session) {
     const [mensajeCompra, setMensajeCompra] = useState('');
     const [mensajeError, setMensajeError] = useState(false);
     const [mostrarCheckout, setMostrarCheckout] = useState(false);
+
+    const carritoRef = useRef([]);
+    useEffect(() => { carritoRef.current = carrito; }, [carrito]);
 
     const cantidadTotal = carrito.reduce((total, p) => total + p.cantidad, 0);
     const totalCarrito  = carrito.reduce((total, p) => total + p.precio * p.cantidad, 0);
@@ -28,12 +31,37 @@ export function useCarrito(session) {
         if (!session?.access_token) return;
 
         async function cargarCarritoServidor() {
+            const carritoLocal = carritoRef.current;
             try {
                 const res = await fetch('/api/carrito', {
                     headers: { Authorization: `Bearer ${session.access_token}` }
                 });
                 const result = await res.json();
-                if (res.ok && result.success) setCarrito(result.data);
+                if (!res.ok || !result.success) return;
+
+                const carritoServidor = result.data;
+
+                // Sincronizar items locales que no están en el servidor
+                const itemsNuevos = carritoLocal.filter(
+                    local => !carritoServidor.find(s => s.id === local.id)
+                );
+                for (const item of itemsNuevos) {
+                    await fetch('/api/carrito', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+                        body: JSON.stringify({ producto_id: item.id, cantidad: item.cantidad })
+                    });
+                }
+
+                if (itemsNuevos.length > 0) {
+                    const res2 = await fetch('/api/carrito', {
+                        headers: { Authorization: `Bearer ${session.access_token}` }
+                    });
+                    const result2 = await res2.json();
+                    if (res2.ok && result2.success) setCarrito(result2.data);
+                } else {
+                    setCarrito(carritoServidor);
+                }
             } catch {
                 // mantiene el carrito local
             }
@@ -53,7 +81,30 @@ export function useCarrito(session) {
         setTimeout(() => setFeedbackError(null), 3000);
     }
 
+    function agregarAlCarritoLocal(producto) {
+        const cantidadActual = carritoRef.current.find(i => i.id === producto.id)?.cantidad ?? 0;
+        const cantidadFinal = cantidadActual + 1;
+
+        if (typeof producto.stock === 'number' && producto.stock < cantidadFinal) {
+            mostrarErrorEnProducto(producto.id, `Solo hay ${producto.stock} unidad${producto.stock === 1 ? '' : 'es'} disponible${producto.stock === 1 ? '' : 's'}`);
+            return;
+        }
+
+        setCarrito(actual => {
+            const existe = actual.find(i => i.id === producto.id);
+            return existe
+                ? actual.map(i => i.id === producto.id ? { ...i, cantidad: i.cantidad + 1 } : i)
+                : [...actual, { ...producto, cantidad: 1 }];
+        });
+        setFeedbackId(producto.id);
+        setTimeout(() => setFeedbackId(null), 1200);
+    }
+
     async function agregarAlCarrito(producto) {
+        if (!session?.access_token) {
+            agregarAlCarritoLocal(producto);
+            return;
+        }
         try {
             const res = await fetch('/api/carrito', {
                 method: 'POST',

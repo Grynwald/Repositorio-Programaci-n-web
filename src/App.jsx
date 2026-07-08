@@ -162,11 +162,6 @@ function App() {
     }
 
     function handleAgregarAlCarrito(producto) {
-        if (!session?.access_token) {
-            setMostrarAuthForm(true);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            return;
-        }
         agregarAlCarrito(producto);
     }
 

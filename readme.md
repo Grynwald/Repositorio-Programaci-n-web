@@ -269,9 +269,20 @@ Los hooks del lado del cliente encapsulan la lógica de sesión:
 
 ---
 
-## Deploy
+## Carrito sin sesión
 
-El proyecto se despliega automáticamente en **Vercel** al hacer push a `main`. Las variables de entorno deben configurarse manualmente en el panel de Vercel.
+Los usuarios pueden agregar, modificar y eliminar productos del carrito **sin necesidad de estar logueados**. El carrito se persiste en `localStorage`. Al iniciar sesión, los ítems locales se sincronizan automáticamente con el carrito del servidor (los ítems que ya estaban en el servidor tienen prioridad en caso de conflicto). Para finalizar la compra sí se requiere login.
+
+---
+
+## Deploy y CI/CD
+
+El proyecto utiliza un pipeline CI/CD completo:
+
+1. **CI (GitHub Actions)**: en cada push a `main` se ejecuta automáticamente un build de Next.js para verificar que el código compila sin errores (`.github/workflows/ci.yml`)
+2. **CD (Vercel)**: si el build pasa, Vercel despliega automáticamente la nueva versión en producción
+
+Las variables de entorno deben configurarse tanto en el panel de Vercel como en los Secrets del repositorio de GitHub (Settings → Secrets and variables → Actions).
 
 El webhook de Mercado Pago apunta a:
 ```

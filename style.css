@@ -1213,7 +1213,8 @@ footer {
     }
 
     .dropdown-content.abierto {
-        display: block;
+        display: block !important;
+        opacity: 1 !important;
     }
 
     .dropdown-content a,

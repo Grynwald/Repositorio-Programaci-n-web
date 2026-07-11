@@ -115,7 +115,7 @@ function App() {
         window.history.pushState(null, '', '/');
         setVista({ nombre: 'inicio' });
         setProductoActual(null);
-        setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 0);
+        setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 200);
     }
 
     function verProducto(producto) {

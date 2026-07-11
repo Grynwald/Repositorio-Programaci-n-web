@@ -5,11 +5,25 @@ export default function CheckoutForm({ finalizarCompra }) {
             <div className="campos-compra">
                 <label>
                     Nombre completo
-                    <input type="text" name="nombre" required />
+                    <input
+                        type="text"
+                        name="nombre"
+                        required
+                        minLength={2}
+                        maxLength={80}
+                        pattern="[A-Za-záéíóúÁÉÍÓÚüÜñÑ\s]+"
+                        title="Solo letras y espacios"
+                    />
                 </label>
                 <label>
                     Telefono
-                    <input type="tel" name="telefono" required />
+                    <input
+                        type="tel"
+                        name="telefono"
+                        required
+                        pattern="[\d\s\+\-\(\)]{6,20}"
+                        title="Solo números, espacios, guiones y paréntesis"
+                    />
                 </label>
                 <label>
                     Email
@@ -17,7 +31,14 @@ export default function CheckoutForm({ finalizarCompra }) {
                 </label>
                 <label>
                     Direccion de entrega
-                    <input type="text" name="direccion" required />
+                    <input
+                        type="text"
+                        name="direccion"
+                        required
+                        minLength={5}
+                        maxLength={200}
+                        title="Ingresá una dirección válida"
+                    />
                 </label>
                 <input type="hidden" name="entrega" value="Envio a domicilio" />
                 <label>

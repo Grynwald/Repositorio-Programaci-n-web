@@ -1143,7 +1143,6 @@ footer {
         flex-direction: row;
         justify-content: space-between;
         padding: 15px 5%;
-        position: relative;
     }
 
     .hamburger {
